@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>jupiter engine</title>
+    <link href="./style.css" rel="stylesheet"/>
+    <script src="./howler.core.min.js"></script>
+    <script src="./engine.js"></script>
+    <script src="./start.js"></script>
+  </head>
+  <body>
+    <div id="screen"></div>
+    <div id="title-board" hidden="hidden">
+      <div id="title">shuttle five</div>
+    </div>
+    <div id="windows">
+      <template id="session-1" data-title="in the shadow of jupiter">
+        <div>
+          <div class="inbox" id="inbox" title="darkmail - inbox" data-open="data-open" data-pinned="data-pinned">
+            <h1>inbox</h1>
+            <ul>
+              <li>[FOIA request declined|email-1]</li>
+            </ul>
+          </div>
+          <div id="inbox-update-1" title="darkmail - inbox" data-pinned="data-pinned">
+            <h1>inbox</h1>
+            <ul>
+              <li>[deep background|email-2]</li>
+              <li>[FOIA request declined|email-1]</li>
+            </ul>
+          </div>
+          <div id="inbox-update-2" title="darkmail - inbox" data-pinned="data-pinned">
+            <h1>inbox</h1>
+            <ul>
+              <li>[breaking news|email-3]</li>
+              <!--li [deep background|email-2]-->
+              <li>[FOIA request declined|email-1]</li>
+            </ul>
+          </div>
+          <div class="inbox" id="email-1" title="darkmail - FOIA request declined">
+            <h1>FOIA request declined</h1>
+            <p>your request for documents concerning [shuttle five|shuttle-five-approach] has been declined as the material has been judged to be commercially sensitive at this time</p>
+            <p>you may resubmit this request no sooner than six months from the date of this judgement, in which case the commercial sensitivity will be reviewed and an updated judgement will be issued</p>
+          </div>
+          <div class="inbox" id="email-2" title="darkmail - deep background">
+            <h1>deep background</h1>
+            <p>here's the deep background on shuttle five. even these internal copies are redacted</p>
+            <p>best i can do for you. we're even now</p>
+            <ul>
+              <li>[financing report|dh-s5-financing-report]</li>
+              <li>[mission brief|dh-s5-mission-brief]</li>
+              <li>[crew profiles|dh-s5-crew-profiles]</li>
+            </ul>
+          </div>
+          <div class="inbox" id="email-3" title="darkmail - breaking news">
+            <h1>breaking news</h1>
+            <p>breaking exclusive. [contact lost with shuttle five|shuttle-five-lost] </p>
+          </div>
+          <div class="news" id="shuttle-five-approach" title="news - shuttle five nears objective">
+            <h1>eyes on the prize: shuttle five nears objective</h1>
+            <p>after a year of waiting, [shuttle five|shuttle-five-info-1] is finally completing its approach to jupiter</p>
+            <p>in the coming weeks the shuttle is expected to swing behind the gas giant to capture high quality surface imagery, as well as conducting several gravity sensitive experiments</p>
+            <p>mission chief [brett evans|brett-evans-info-1] remains confident, declaring "systems are nominal and the team remain in high spirits, ready to complete their mission"</p><img src="assets/shuttle-five-news-1.png" alt="shuttle five press conference"/>
+          </div>
+          <div class="news" id="shuttle-five-lost" title="news - contact lost with shuttle five">
+            <h1>contact lost with shuttle five</h1>
+            <p>following initial reports of communication issues from deep horizon mission control, brett evans has now announced that deep horizon have lost contact with shuttle five</p>
+            <p>as planned, communications were suspended while shuttle five through the shadow of jupiter and conducted the main suite of experiments</p>
+            <p>despite visual confirmation that the shuttle has emerged as expected, mission control were unable to re-establish contact with the crew of shuttle five</p><img src="assets/jupiter-shadow.png" alt="the planet jupiter"/>
+          </div>
+          <div class="news" id="brett-evans-info-1" title="news - one giant leap">
+            <h1>brett evans joins deep horizon</h1>
+            <p>brett evans has announced his departure from [inteltrax informatics|inteltrax-homepage] to join the board at [deep horizon|deep-horizon-homepage]</p>
+            <p>with yet another high profile personnel change at deep horizon, there is strong suspicious that a new mission will be announced shortly--more on that as it comes</p><img src="assets/brett-evans-profile.png" alt="brett evans profile shot"/>
+          </div>
+          <div class="corporate" id="inteltrax-homepage" title="inteltrax informatics - about">
+            <h1>inteltrax informatics</h1>
+            <p>inteltrax is a leading global provider of data and logistics services</p>
+            <p>our commitment to a data-first approach is highly valued by governments and private corporations alike </p>
+            <p>inteltrax has approximately 470,000 people across 160 countries and territories</p><img src="assets/inteltrax-logo.png" alt="hand holding a cube"/>
+          </div>
+          <div class="corporate" id="deep-horizon-homepage" title="deep horizon - about">
+            <h1>deep horizon</h1>
+            <p>deep horizon is the world leader in rocketry and autonomous lunar operations</p>
+            <p>deep horizon are responsible for fulfilling 71% of all government space contracts, and operate the only commercial moonbase in existence</p><img src="assets/deep-horizon-logo.png" alt="the moon over the horizon of earth from space"/>
+          </div>
+          <div class="corporate" id="shuttle-five-info-1" title="deep horizon - shuttle five">
+            <h1>shuttle five mission</h1>
+            <p>mankinds first step into the outer planets, shuttle five is a crewed mission to conduct science at the edge of jupiter</p>
+            <p>the first crewed mission in a decade, space shuttle five represents a reignition of the space programme that looks to open the stars to commercial enterprise</p>
+            <p>this mission will conduct remote surveys of the moons of jupiter, probe the extreme gravity of the gas giant, as well as a host of general astronomical science including [deep space psychometrics|deep-space-psychometrics-info] </p><img src="assets/shuttle-five-crew.png" alt="shuttle five crew photo"/>
+          </div>
+          <div class="science" id="deep-space-psychometrics-info" title="freepedia - deep space psychometrics">
+            <h1>deep space psychometrics</h1>
+            <p>an emerging field of study into the effects of deep space exposure on human moods and behaviour</p>
+            <p>it is thought that the claustrophic and isolated conditions of deep space, combined with long mission durations, will pose unique challenges for crew</p>
+          </div>
+          <div class="corporate" id="dh-s5-financing-report" title="[INTERNAL] shuttle five financing report">
+            <h1>shuttle five financing report</h1>
+            <p>note: this document is for internal distribution only</p><img src="assets/finance-chart.png"/>
+          </div>
+          <div class="corporate" id="dh-s5-mission-brief" title="[INTERNAL] shuttle five mission brief">
+            <h1>shuttle five mission brief</h1>
+            <p>note: this document is for internal distribution only</p><img src="assets/flight-path.png"/>
+          </div>
+          <div class="corporate" id="dh-s5-crew-profiles" title="[INTERNAL] shuttle five crew profiles">
+            <h1>shuttle five crew profiles</h1>
+            <p>note: this document is for internal distribution only</p>
+            <p class="redacted">evans has confirmed that <s>inteltrax</s> are satisfied with the crew's psychometric profiles and all should be within the parameters of their study <s>lorem ipsum dolor sit amet, consectetur adipiscing elit</s></p>
+            <p class="redacted">as for <s>inteltrax operative greg douglas</s>, he has passed basic evaluation and is competent to perform basic operations on the shuttle </p><img src="assets/ecg.png"/>
+          </div>
+        </div>
+      </template>
+      <template id="session-2" data-title="the blood of the gods">
+        <div>
+          <div id="debug">
+            <h1>debug</h1>
+            <ul>
+              <li>[recovery|news-shuttle-five-recovery]</li>
+            </ul>
+          </div>
+          <div class="inbox" id="inbox-lab" title="inteltrax mail - inbox" data-open="data-open" data-pinned="data-pinned">
+            <h1>inbox</h1>
+            <ul>
+              <li>[security policy change|lab-email-1]</li>
+            </ul>
+          </div>
+          <div id="inbox-lab-update-1">
+            <h1>inbox</h1>
+            <ul>
+              <li>[two-factor credentials approved|lab-email-2]</li>
+              <li>[security policy change|lab-email-1]</li>
+            </ul>
+          </div>
+          <div id="inbox-lab-update-2">
+            <h1>inbox</h1>
+            <ul>
+              <li>[inhibitor breakthrough|lab-email-3]</li>
+              <li>[two-factor credentials approved|lab-email-2]</li>
+              <li>[security policy change|lab-email-1]</li>
+            </ul>
+          </div>
+          <div class="corporate" id="lab-email-1" title="inteltrax mail - security policy change">
+            <h1>security policy change</h1>
+            <p>following the [deep horizon leak|news-shuttle-murders] earlier this year, we have been rolling out new security measures</p>
+            <p>the final stage of this is two factor logins for on site access to the intranet, which is now in effect</p>
+            <p>access to secure internal documents and pages is suspended for all employees until their credentials have been approved individually by central security</p>
+          </div>
+          <div class="corporate" id="lab-email-2" title="inteltrax mail - two-factor validation complete">
+            <h1>two-factor validation complete</h1>
+            <p>your two-factor dongle has been validated by your supervisor and your [access rights|lab-portal] are now restored</p>
+          </div>
+          <div class="corporate" id="lab-email-3" title="inteltrax mail - inhibitor breakthrough">
+            <h1>inhibitor breakthrough</h1>
+            <p>we've had a major breakthrough on [one of the inhibitor strategies|inhibitor-found] and can now proudly announce that we've confirmed full stablisation</p>
+            <p>with this last hurdle we can finally begin moving towards public trials</p>
+          </div>
+          <div class="news" id="news-shuttle-hope" title="news - hope for shuttle five answers">
+            <h1>hope for shuttle five</h1>
+            <p>it has been weeks of radio silence from shuttle five, which has been uncontactable ever since it [passed behind jupiter|shuttle-five-lost], but there is fresh hope today in a statement from deep horizon</p>
+            <p class="quote">"despite failure to re-establish contact with the crew of shuttle five, we have been able to access navigational telemetry and can confirm the shuttle is maintaining its intended course back to earth"</p>
+            <p class="quote">"while the absence of any contact or signal of any kind from the crew suggests the worst, we still hold out hope for the possibility that they are alive and well and waiting out the journey quietly"</p>
+            <p>shuttle five is expected to enter earth orbit late this year, and until then our thoughts remain with the crew and their families</p><img src="assets/shuttle-adrift.png" alt="space shuttle adrift in space"/>
+          </div>
+          <div class="news" id="news-shuttle-return" title="news - in memory of shuttle five">
+            <h1>in memory of shuttle five</h1>
+            <p>shuttle five, which has been [drifing silently|news-shuttle-hope] for the past months has now arrived in earth orbit and the worst has been confirmed</p>
+            <p class="quote">"it is with deep sadness i must confirm the loss of all hands aboard shuttle five. a full investigation is underway into the circumstances, and i would ask for the sake of the families to refrain from speculating until we can make our findings known"</p>
+            <p>vigils are expected countrywide as the nation comes to term with this tragic loss</p><img src="assets/shuttle-five-crew.png" alt="shuttle five crew photo"/>
+          </div>
+          <div class="news" id="news-shuttle-murders" title="news - space shuttle sex murders">
+            <h1>space shuttle sex murders</h1>
+            <p>shocking new details have emerged following deep horizon's [latest statement|news-shuttle-return] concerning the loss of all hands on shuttle five</p>
+            <p>an anonymous source from within deep horizon, fearing a coverup, has leaked internal memos confirming the incidents aboard shuttle five which describe "homicidal mutilation" which is further concluded to be "of an obviously sexual nature"</p>
+            <p>the leaked documents offer no insight into the perpetrator or motive of the massacre</p><img src="assets/memo.png" alt="leaked memos"/>
+          </div>
+          <div class="inteltrax" id="lab-portal" title="inteltrax - panacea project">
+            <h1>panacea project</h1>
+            <ul>
+              <li>[project status|lab-status]</li>
+            </ul>
+            <ul>
+              <li>[dna analysis|dna-analysis]</li>
+              <li>[molecular analysis|molecular-analysis]</li>
+            </ul>
+          </div>
+          <div class="inteltrax" id="lab-status" title="[CLASSIFIED] PANACEA PROJECT STATUS">
+            <h1>panacea project status</h1>
+            <p>the board are extremely pleased with progress and have approved the full funding request</p>
+            <p>the blood cultivation group are confident and ready to ramp up to full market production on time </p>
+            <p>the last hurdle is the inhibitor group, but i am assured they are one breakthrough away from full stabilisation</p><img src="assets/finance-chart.png" alt="tangle of human torsos and limbs tied together with rope"/>
+          </div>
+          <div class="inteltrax" id="lab-specimen" title="[CLASSIFIED] SPECIMEN OBSERVATION">
+            <h1>specimen observation</h1>
+            <p>the cluster's continued writhing may perhaps be motivated by a need to continually exercise muscle? this could also explain the [disturbing vocalisation|lab-vocal] </p>
+            <p>despite the clear discomfort during the prodecure, the cluster remains stable after the excision of the [exterior torso|lab-autopsy] and amputation points are healing remarkably quickly</p>
+            <p>perhaps we were too hasty? could the torso also have been kept alive?</p><img src="assets/knot-7.png" alt="tangle of human torsos and limbs tied together with rope"/>
+          </div>
+          <div class="inteltrax" id="lab-autopsy" title="[CLASSIFIED] AUTOPSY REPORT">
+            <h1>autopsy report</h1>
+            <ul>
+              <li>trauma of extremities during excision from cluster</li>
+              <li>no additional external wounds or marks, little sign of decay</li>
+              <li>visceral organs present and consistent with single body</li>
+              <li>heavily atrophied with extensive [incursion of nervous system|nerve-analysis]</li>
+              <li>unusual presence of graymatter development at interface between nerves and viscera</li>
+              <li>despite internal anomalies, cause of death consistent with heavy blood loss</li>
+            </ul><img src="assets/dissection.png" alt="dissected torso"/>
+          </div>
+          <div class="inteltrax" id="lab-vocal" title="[CLASSIFIED] VOCAL ANALYSIS">
+            <h1>vocal analysis</h1>
+            <p>the clusters contains several subsumed larynxes that intermittently vocalise</p>
+            <p>there seems to be no coordination or pattern to the vocalisations </p>
+            <p>these vocalisations can very roughly map roughly map to english phonemes, although are entirely random, with no linguistic meaning</p>
+            <p>with filtering adjusting for the distortions, the vocal characteristics seem to correlate with the audio samples provided with the crew profiles</p><img src="assets/audio.png" alt="audio waveform"/>
+          </div>
+          <div class="inteltrax" id="gene-analysis" title="[CLASSIFIED] GENE ANALYSIS">
+            <h1>gene analysis</h1>
+            <p>distinct dna present in each formation of the [cluster|lab-specimen] corresponding to expected crew members</p>
+            <p>bloodstream a mixture of dna types partially matching crew</p>
+            <p>anomalous genes present in all samples but highly pronounced in blood </p><img src="assets/gene-analysis.png" alt="gene analysis results"/>
+          </div>
+          <div class="inteltrax" id="nerve-analysis" title="[CLASSIFIED] NERVE ANALYSIS">
+            <h1>nerve analysis</h1>
+            <p>the nerve deterioration can only be described as a progressive decentralisation of the brain within the body</p>
+            <p>there is no other explanation for the new distribution of neurons and structural network observed</p>
+            <p>it is highly unlikely that such a radical division of the brain could still support any conventional form of consciousness</p>
+            <p>despite this, there is evidence of complex neuronal activity well beyond the observed autonomous functions sustaining the body</p><img src="assets/neuron.png" alt="close-up of neuron and connections"/>
+          </div>
+          <div class="inteltrax" id="dna-analysis" title="[CLASSIFIED] DNA ANALYSIS">
+            <h1>dna analysis</h1>
+            <p>dna structure, despite anomalies present in the [gene analysis|gene-analysis], appears undisturbed and unquestionably terrestrial</p>
+            <p>gene expression has been heavily moderated, with large swathes of suppression and novel stem cell activations accounting for the [drastic bodily changes|lab-autopsy]</p><img src="assets/dna.png" alt="molecular diagram of dna strand"/>
+          </div>
+          <div class="inteltrax" id="molecular-analysis" title="[CLASSIFIED] MOLECULAR ANALYSIS">
+            <h1>molecular analysis</h1>
+            <p>the novel stem cells present in the blood co-occur with high concentrations of a formerly unknown psychostimulant</p>
+            <p>in tandem these substances are responsible for powerful regenerative and transformative effects within the cluster </p>
+            <p>as hoped, there is strong potential for a new class of therapeutic drug designs if the right inhibiting factors can be determined</p><img src="assets/molecular.png" alt="rendering of molecule"/>
+          </div>
+          <div class="inteltrax" id="inhibitor-found" title="[CLASSIFIED] INHIBITOR B">
+            <h1>inhibitor b - antigen</h1>
+            <p>preliminary tests indicate the presence of the new compounds does provoke an immune response</p>
+            <p>at low doses and mixed with an antigen, the immune system could be provoked to sufficiently suppress the transformative side-effects  </p><img src="assets/inhibitor.png" alt="protein and antigen diagram"/>
+          </div>
+        </div>
+      </template>
+      <template id="session-3" data-title="ideation">
+        <div>
+          <div class="inbox" id="inbox-3" title="mail - inbox" data-open="data-open" data-pinned="data-pinned">
+            <h1>inbox</h1>
+            <ul>
+              <li>[new article|email-3-digest]</li>
+            </ul>
+          </div>
+          <div id="inbox-3-update-1">
+            <h1>inbox</h1>
+            <ul>
+              <li>[trending article|email-3-end]</li>
+              <li>[new article|email-3-digest]</li>
+            </ul>
+          </div>
+          <div class="inbox" id="email-3-digest" title="mail - new article">
+            <h1>new article</h1>
+            <p>[opinion - a world in crisis|opinion-3-crisis] </p>
+          </div>
+          <div class="inbox" id="email-3-end" title="mail - trending article">
+            <h1>trending article</h1>
+            <p>[the exhange - what really happened to shuttle five|rumour-3-shuttle-five-truth] </p>
+          </div>
+          <div class="opinion" id="opinion-3-crisis" title="opinion - a world in crisis">
+            <h1>a world in crisis</h1>
+            <p>no jobs, no support, nowhere to call home. it's no wonder they're calling themselves the hopeless generation</p>
+            <p>across the country, across the world, more and more are discarded and forgotten, slipping into the ever-widening cracks of our society</p>
+            <p>whole city blocks are being cut off and declared "slum districts", are we surprised about [rising suicides|news-3-euphoron-suicide] and declining births for a generation that sees no future for themselves, no future for children?</p>
+            <p>they call it ["the euphoron crisis"|news-3-euphoron-crisis] but if you ask me euphoron is nothing more than a sedative for a society already on its death bed</p><img src="assets/squat.png" alt="a man squatting in delapidated appartment"/>
+          </div>
+          <div class="news" id="news-3-euphoron-crisis" title="news - city declares euphoron crisis">
+            <h1>city declares euphoron crisis</h1>
+            <p>today our city has officially declared euphoron crisis, making it the 73rd major city in the country to accept voluntary sanctions</p>
+            <p>in accordance with the federation act, [inteltrax will be given full jurisdiction|inteltrax-3-euphoron-control] over disease control and, where necessary, biohazard remediation</p>
+            <p>city residents can expect curfews, rolling lockdowns, and random testing within the coming months</p><img src="assets/security.png" alt="private security checkpoint"/>
+          </div>
+          <div class="news" id="news-3-euphoron-suicide" title="news - euphoron orgy suicide">
+            <h1>euphoron orgy suicide</h1>
+            <p>enhanced libido has long been among the [alleged effects of euphoron|rumour-3-euphoron-trip], but more and more cases are emerging of suicide under the effects of euphoron, often with a highly sexual component</p>
+            <p>one high profile case, ritualistic assumed connected to [euphoron cults|rumour-3-euphoron-gift], involved an orgy of a dozen people under the influence of severe euphoron overdose</p>
+            <p>euphoron overdose results in extreme physiological changes to the body and a drawn out brain death that is irreversible</p>
+            <p>in line with concern of [pathonogenic danger|science-euphoron-effects] in advanced euphoron effects, [reported cases|inteltrax-3-euphoron-control] are met with euthanasia and incineration</p><img src="assets/orgy.png" alt="a dozen naked bodies in a sexual orgy"/>
+          </div>
+          <div class="rumour" id="rumour-3-euphoron-flesh-farms" title="the exchange - euphoron flesh farms">
+            <h1>euphoron flesh farms</h1>
+            <p>a room full of euphoron addicts writhing in a naked mass of flesh</p>
+            <p>they're so out of it they're not even aware we're there</p>
+            <p>with euphoron adaptation their bodies have begun to produce it naturally</p>
+            <p>they draw the blood and refine euphoron </p>
+            <p>that's where they get it all from. the entire street euphoron supply </p><img src="assets/knot-10.png" alt="dozens of naked bodies intertwined"/>
+          </div>
+          <div class="rumour" id="rumour-3-euphoron-trip" title="the exchange - euphoron trip">
+            <h1>euphoron trip</h1>
+            <p>euphoron lets you rise above the din of anxieties and see the full picture--the human race, we're all the same, we're all connected y'know? </p>
+            <p>and yes it makes you want to fuck everyone, they aren't kidding about that</p><img src="assets/raver.png"/>
+          </div>
+          <div class="rumour" id="rumour-3-spatial-pinch" title="the exchange - euphoron void">
+            <h1>euphoron void</h1>
+            <p>this thing terrifies me</p>
+            <p>it sits fully inert, a fixed point, a hole in space</p>
+            <p>everything around it warps and distorts like a black hole, but it has no gravity, no pull</p>
+            <p>except that's the terrifying thing... i am pulled, drawn by the dark fascination with oblivion, the edge of reality, staring into infinity and not being able to look away</p>
+            <p>how could something so perfect, so pure, so cold, emerge from these twisted pulps of human flesh?</p><img src="assets/pillar-4.png" alt="pillar of bodies distorted around a spatial anomaly"/>
+          </div>
+          <div class="rumour" id="rumour-3-euphoron-gift" title="the exhange - the gift">
+            <h1>the gift</h1>
+            <p>in the shadow of jupiter, humanity sat at the table of the gods</p>
+            <p>they gave us a simple message: relinquish your flesh and [become as us|rumour-3-euphoron-flesh-farms]</p>
+            <p>euphoron is their gift, the blood of salvation</p>
+            <p>enter their convenant and open to them. [hear their message|rumour-3-euphoron-message]</p><img src="assets/neurons.png" alt="highly interconnected neurons"/>
+          </div>
+          <div class="rumour" id="rumour-3-euphoron-message" title="the exchange - euphoron hallucinations">
+            <h1>euphoron hallucinations</h1>
+            <p>with every trip its more intense, the flood of connectedness, feeling a part of something, of everything</p>
+            <p>the anxieties of the world no longer saturate the air</p>
+            <p>my fantasies of the euphoron orgies, feel like dreams, feel real </p>
+            <p>i feel the [angels|rumour-3-spatial-pinch] speak in every voice, beckon me, i'm not afraid</p><img src="assets/hallucination.png" alt="optical illusion"/>
+          </div>
+          <div class="rumour" id="rumour-3-shuttle-five-truth" title="the exhange - what really happened to shuttle five">
+            <h1>what really happened to shuttle five</h1>
+            <p>people will say they were touched by aliens or god, but here's what i think</p>
+            <p>shuttle five passed further out than ever before. so far from earth, the cradle of humanity, so far from the warm of human connection</p>
+            <p>when they passed into the shadow of jupiter they passed into the shadow of existence--out of sight, out of contact, out of reality itself</p>
+            <p>call it god if you like. they touched, for a moment, the sacred state of unbeing and returned transformed in the image of their own desire, of humanity's desires projected onto them</p>
+            <p>shuttle five was a message in a bottle, a plea for salvation from ourselves</p><img src="assets/bottle.png" alt="message in a bottle on the ocean at sunset"/>
+          </div>
+          <div class="opinion credits" id="credits-1" title="uncertain times, uncertain dreams"><img src="assets/restless-sleep.png" alt="someone struggling to sleep"/></div>
+          <div class="news credits" id="credits-2" title="euphoron sickness--airborne?"><img src="assets/cough.png" alt="woman in mask coughing"/></div>
+          <div class="rumour credits" id="credits-3" title="euphoron night terrors"><img src="assets/knot-11.png" alt="twisted knot of human limbs"/></div>
+          <div class="science credits" id="credits-4" title="insomnia link to euphoron sickness"><img src="assets/ecg.png" alt="ecg brain wave graph"/></div>
+          <div class="news credits" id="credits-5" title="sickness penetrates quarantine"><img src="assets/hospital.png" alt="overwhelmed hospital ward"/></div>
+          <div class="news credits" id="credits-6" title="euphoron anomaly consuming city"><img src="assets/city-pinch-1.png" alt="aerial view of city with spatial anomaly orb distorting buildings"/></div>
+          <div class="inteltrax credits" id="credits-music" title="credits - music">
+            <h1>music credits</h1>
+            <ul>
+              <li><a href="https://freesound.org/people/DDmyzik/sounds/469421/" target="_blank">DDmyzik - Infographic Loop</a></li>
+              <li><a href="https://spaceshuttlesexmurders.bandcamp.com/album/space-shuttle-sex-murders" target="_blank">Space Shuttle Sex Murders - Arcane Libraries of Magnetic Tapes</a></li>
+              <li><a href="https://spaceshuttlesexmurders.bandcamp.com/album/space-shuttle-sex-murders" target="_blank">Space Shuttle Sex Murders - Café Flesh</a></li>
+              <li><a href="https://freemusicarchive.org/music/Jonas/Pindarotsjes_1552/Jonas_The_Plugexpert_-_Pindarotsjes_-_10_loop_1191" target="_blank">Jonas - loop</a></li>
+            </ul>
+          </div>
+          <div class="inteltrax credits" id="credits-sounds" title="credits - sounds">
+            <h1>sound credits</h1>
+            <ul>
+              <li><a href="https://freesound.org/people/deleted_user_4772965/sounds/256455/" target="_blank">deleted_user_4772965 - Mouse Click</a></li>
+              <li><a href="https://freesound.org/people/survivalbag/sounds/156088/" target="_blank">survivalbag - electrical hum G slightly sharp</a></li>
+              <li><a href="https://freesound.org/people/IENBA/sounds/545495/" target="_blank">IENBA - Notification</a></li>
+            </ul>
+          </div>
+          <div class="inbox credits" id="credits-thanks" title="thanks for playing"><img src="assets/domino.png"/></div>
+          <div class="science" id="science-euphoron-effects" title="freepharma - euphoron effects">
+            <h1>euphoron effects</h1>
+            <p>clinical trials are still ongoing and the full effects of euphoron are not yet known</p>
+            <p>in both animals and humans, euphoron acts like a mild virus, hijacking the cells of the body to replicate</p>
+            <p>at low doses this replication is not self-sustaining and euphoron present in the body is quickly consumed</p>
+            <p>initial trials suggest a number of extraordinary therapeutic outcomes as well as highly potent analgesic and euphoric effects</p>
+            <p>euphoron overdose is highly toxic, leading to irreversible self-sustaining runaway production and secretion of [euphoron-b|science-euphoron-b] by the body</p>
+          </div>
+          <div class="science" id="science-euphoron-b" title="freepharma - euphoron-b">
+            <h1>euphoron-b</h1>
+            <p>a secondary strain of euphoron produced by the body as a consequence of euphoron overdose</p>
+            <p>euphoron-b is distinguished from euphoron-a by it's ability to pass through human tissues and transmit on skin contact</p>
+          </div>
+          <div class="corporate" id="inteltrax-3-euphoron-control" title="inteltrax - euphoron control">
+            <h1>euphoron control</h1>
+            <p>under the federation act, inteltrax is authorised to assist in the government's euphoron control programme for the following purposes: </p>
+            <ul>
+              <li>supply chain tracing</li>
+              <li>random drug testing</li>
+              <li>biohazard remediation</li>
+            </ul><img src="assets/biohazard.png" alt="person in biohazard protection gear"/>
+          </div>
+          <div class="news" id="news-3-euphoron-concern" title="news - euphoron concern mounts">
+            <h1>euphoron concern mounts</h1>
+            <p>as inteltrax's new wonder drug continues to progress healthily through the proper channels of certification, the street form "euphoron" has increasingly become the drug of choice of our society's underbelly</p>
+            <p>until now, it has remained uncomfortably endemic, but there is mounting concern that public attitudes are shifting and euphoron abuse is becoming commonplace</p>
+            <p>the cdc has repeatedly warned against euphoron abuse citing its unique and poorly understood pharmacology. a new drug, the long term effects of euphoron are not known at this time</p>
+            <p>years away from certification, the production method of inteltrax's new drug remains a trade secret, raising many questions about the sources for euphoron in current circulation  </p><img src="assets/overdose.png" alt="drug overdose"/>
+          </div>
+        </div>
+      </template>
+    </div>
+  </body>
+</html>

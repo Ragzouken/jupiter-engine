@@ -1,0 +1,11 @@
+{
+    "typeAcquisition": {
+      "include": ["howler"]
+    },
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "esnext",
+      "checkJs": true
+    },
+    "include": ["public/*.js"]
+}
