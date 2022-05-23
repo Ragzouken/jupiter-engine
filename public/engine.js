@@ -1,3 +1,21 @@
+const EVENTS = new Map();
+
+function ADD_EVENT(id, func) {
+    EVENTS.set(id, func);
+}
+
+function RUN_EVENT_AFTER_SEEN(event, ids) {
+    return openedTrigger(...ids).then(() => EVENTS.get(event)());
+}
+
+function RUN_EVENT_AFTER_CLOSED(event, ids) {
+    return closedTrigger(...ids).then(() => EVENTS.get(event)());
+}
+
+function RUN_EVENT(event) {
+    return EVENTS.get(event)();
+}
+
 /**
  * @template {keyof HTMLElementTagNameMap} K
  * @param {K} tagName 
