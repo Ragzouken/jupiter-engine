@@ -18,34 +18,31 @@ const chapter3Title = "ideation";
 
 ADD_EVENT("chapter-1-begin", async () => {
     await SHOW_TITLE(chapter1Title);
-    SET_MUSIC("mundane");
+    PLAY_MUSIC("mundane");
     OPEN_WINDOW("inbox");
 });
 
 ADD_EVENT("chapter-1-solved", async () => {
     await DELAY(3);
-    replaceWindow("inbox", "inbox-update-2");
-    attentionWindow("inbox");
+    REPLACE_WINDOW("inbox", "inbox-update-2");
+    PING_WINDOW("inbox");
 });
 
-ADD_EVENT("chapter-1-silence", async () => {
-    fadeMusicOut(1);
+ADD_EVENT("silence", async () => {
+    FADE_MUSIC(1);
 });
 
 ADD_EVENT("chapter-1-ending", async () => {
-    SET_MUSIC("mystery");
-    exclusiveWindow("shuttle-five-lost");
-    await DELAY(1);
-    closeAll("shuttle-five-lost");
-    hideScreen();
+    PLAY_MUSIC("mystery");
+    await FADE_ALL_EXCEPT("shuttle-five-lost");
 });
 
 RUN_EVENT_AFTER_SEEN("chapter-1-solved", ["inteltrax-homepage", "deep-space-psychometrics-info"]);
-RUN_EVENT_AFTER_SEEN("chapter-1-silence", ["email-3"]);
+RUN_EVENT_AFTER_SEEN("silence", ["email-3"]);
 RUN_EVENT_AFTER_SEEN("chapter-1-ending", ["shuttle-five-lost"]);
 
 ADD_EVENT("chapter-2-begin", async () => {
-    SET_MUSIC("mystery");
+    PLAY_MUSIC("mystery");
     await SHOW_TITLE(chapter2Title);
     OPEN_WINDOW("inbox-lab");
 });
@@ -53,36 +50,29 @@ ADD_EVENT("chapter-2-begin", async () => {
 RUN_EVENT_AFTER_CLOSED("chapter-2-begin", ["shuttle-five-lost"]);
 
 ADD_EVENT("chapter-2-approval", async () => {
-    await DELAY(2 + 2 * Math.random());
-    replaceWindow("inbox-lab", "inbox-lab-update-1");
-    attentionWindow("inbox-lab");
+    await DELAY(randFloat(2, 4));
+    REPLACE_WINDOW("inbox-lab", "inbox-lab-update-1");
+    PING_WINDOW("inbox-lab");
 });
 
 ADD_EVENT("chapter-2-breakthrough", async () => {
-    await DELAY(2 + 2 * Math.random());
-    replaceWindow("inbox-lab", "inbox-lab-update-2");
-    attentionWindow("inbox-lab");
-});
-
-ADD_EVENT("chapter-2-silence", async () => {
-    fadeMusicOut(1);
+    await DELAY(randFloat(2, 4));
+    REPLACE_WINDOW("inbox-lab", "inbox-lab-update-2");
+    PING_WINDOW("inbox-lab");
 });
 
 ADD_EVENT("chapter-2-ending", async () => {
-    SET_MUSIC("evolution");
-    exclusiveWindow("inhibitor-found");
-    await DELAY(1);
-    closeAll("inhibitor-found");
-    hideScreen();
+    PLAY_MUSIC("evolution");
+    await FADE_ALL_EXCEPT("inhibitor-found");
 });
 
 RUN_EVENT_AFTER_SEEN("chapter-2-approval", ["news-shuttle-hope"]);
 RUN_EVENT_AFTER_SEEN("chapter-2-breakthrough", ["lab-status", "lab-specimen", "lab-vocal", "nerve-analysis"]);
-RUN_EVENT_AFTER_SEEN("chapter-2-silence", ["lab-email-3"]);
+RUN_EVENT_AFTER_SEEN("silence", ["lab-email-3"]);
 RUN_EVENT_AFTER_SEEN("chapter-2-ending", ["inhibitor-found"]);
 
 ADD_EVENT("chapter-3-begin", async () => {
-    SET_MUSIC("evolution");
+    PLAY_MUSIC("evolution");
     await SHOW_TITLE(chapter3Title);
     OPEN_WINDOW("inbox-3");
 });
@@ -90,29 +80,22 @@ ADD_EVENT("chapter-3-begin", async () => {
 RUN_EVENT_AFTER_CLOSED("chapter-3-begin", ["inhibitor-found"]);
 
 ADD_EVENT("chapter-3-trending", async () => {
-    await DELAY(2 + 2 * Math.random());
-    replaceWindow("inbox-3", "inbox-3-update-1");
-    attentionWindow("inbox-3");
-});
-
-ADD_EVENT("chapter-3-silence", async () => {
-    fadeMusicOut(1);
+    await DELAY(randFloat(2, 4));
+    REPLACE_WINDOW("inbox-3", "inbox-3-update-1");
+    PING_WINDOW("inbox-3");
 });
 
 ADD_EVENT("chapter-3-ending", async () => {
-    SET_MUSIC("credits");
-    exclusiveWindow("rumour-3-shuttle-five-truth");
-    await DELAY(1);
-    closeAll("rumour-3-shuttle-five-truth");
-    hideScreen();
+    PLAY_MUSIC("credits");
+    await FADE_ALL_EXCEPT("rumour-3-shuttle-five-truth");
 });
 
 RUN_EVENT_AFTER_SEEN("chapter-3-trending", ["inteltrax-3-euphoron-control", "rumour-3-spatial-pinch"]);
-RUN_EVENT_AFTER_SEEN("chapter-3-silence", ["email-3-end"]);
+RUN_EVENT_AFTER_SEEN("silence", ["email-3-end"]);
 RUN_EVENT_AFTER_SEEN("chapter-3-ending", ["rumour-3-shuttle-five-truth"]);
 
 ADD_EVENT("credits-sequence", async () => {
-    SET_MUSIC("credits");
+    PLAY_MUSIC("credits");
     await DELAY(5);
     OPEN_WINDOW("credits-1");
     await DELAY(2.5);

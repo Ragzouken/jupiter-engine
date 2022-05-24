@@ -19,3 +19,7 @@
 function sleep(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
+
+function randFloat(min, max) {
+    return min + (max - min) * Math.random();
+}

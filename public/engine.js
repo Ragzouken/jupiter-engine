@@ -21,6 +21,25 @@ async function OPEN_WINDOW(id) {
     await openWindow(id);
 }
 
+async function PING_WINDOW(id) {
+    await attentionWindow(id);
+}
+
+async function FADE_ALL_EXCEPT(...ids) {
+    exclusiveWindow(...ids);
+    await DELAY(1);
+    CLOSE_ALL_EXCEPT(...ids);
+    hideScreen();
+}
+
+function CLOSE_ALL_EXCEPT(...ids) {
+    closeAll(...ids);
+}
+
+async function REPLACE_WINDOW(targetId, sourceId) {
+    replaceWindow(targetId, sourceId);
+}
+
 const EVENTS = new Map();
 
 function ADD_EVENT(id, func) {
@@ -54,8 +73,13 @@ function ADD_CLIP(id, src, volume) {
     sounds.clips[id] = new Howl({ src: [src], volume })
 }
 
-function SET_MUSIC(id) {
+function PLAY_MUSIC(id) {
     setMusic(sounds.music[id]);
+}
+
+async function FADE_MUSIC(duration) {
+    fadeMusicOut(duration);
+    return DELAY(duration);
 }
 
 let activeMusic;
@@ -138,13 +162,13 @@ async function flashElement(element, duration=.1) {
 
 let prevZ = 0;
 
-async function exclusiveWindow(id) {
-    const windowElement = document.getElementById(id);
+async function exclusiveWindow(...ids) {
     const screen = document.getElementById("screen");
     screen.style.setProperty("opacity", "100%");
     screen.style.removeProperty("pointer-events");
     focusWindow(screen);
-    focusWindow(windowElement);
+
+    ids.forEach((id) => focusWindow(document.getElementById(id)));
 }
 
 async function hideScreen() {
