@@ -1,7 +1,3 @@
-async function start() {
-    await RUN_EVENT("chapter-1-begin");
-}
-
 ADD_CLIP("click", "assets/click.mp3");
 ADD_CLIP("move", "assets/buzz-grain.mp3");
 ADD_CLIP("notification", "assets/notification.mp3");
@@ -15,6 +11,8 @@ ADD_MUSIC("credits", "assets/credits-loop.mp3", .1);
 const chapter1Title = "in the shadow of jupiter";
 const chapter2Title = "the blood of the gods";
 const chapter3Title = "ideation";
+
+ADD_EVENT("start", () => RUN_EVENT("chapter-1-begin"));
 
 ADD_EVENT("chapter-1-begin", async () => {
     await SHOW_TITLE(chapter1Title);

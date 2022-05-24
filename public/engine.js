@@ -326,7 +326,7 @@ async function setup() {
     preventSelect();
 
     await loadWindows("window-data");
-    await start();
+    await RUN_EVENT("start");
 }
 
 async function confineWindows() {
