@@ -1,3 +1,21 @@
+/**
+ * @typedef {Object} JupiterDataWindow
+ * @property {string} id
+ * @property {string} title
+ * @property {string} body
+ * @property {string[]} classes
+ * @property {boolean} pinned
+ * @property {boolean} open
+ */
+
+const WINDOW_DATA = new Map();
+
+async function OPEN_WINDOW(id) {
+    const data = WINDOW_DATA.get(id);
+    setupWindow2(data);
+    await openWindow(id);
+}
+
 const EVENTS = new Map();
 
 function ADD_EVENT(id, func) {
@@ -16,34 +34,39 @@ function RUN_EVENT(event) {
     return EVENTS.get(event)();
 }
 
-/**
- * @template {keyof HTMLElementTagNameMap} K
- * @param {K} tagName 
- * @param {*} attributes 
- * @param  {...(Node | string)} children 
- * @returns {HTMLElementTagNameMap[K]}
- */
- function html(tagName, attributes = {}, ...children) {
-    const element = /** @type {HTMLElementTagNameMap[K]} */ (document.createElement(tagName)); 
-    Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value));
-    children.forEach((child) => element.append(child));
-    return element;
+const DELAY = (seconds) => sleep(seconds * 1000);
+
+const sounds = {
+    music: {},
+    clips: {},
 }
 
-/** @param {number} milliseconds */
-function sleep(milliseconds) {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
+function ADD_MUSIC(id, src, volume=1, loop=true) {
+    sounds.music[id] = new Howl({ src: [src], volume, loop });
+}
+
+function ADD_CLIP(id, src, volume) {
+    sounds.clips[id] = new Howl({ src: [src], volume })
+}
+
+function SET_MUSIC(id) {
+    setMusic(sounds.music[id]);
 }
 
 let activeMusic;
 
-function setMusic(music) {
-    if (activeMusic === music) return;
-    if (activeMusic) activeMusic.stop();
+function setMusic(nextMusic) {
+    const prevMusic = activeMusic;
 
-    activeMusic = music;
-    activeMusic.play();
-    activeMusic.fade(0, 0.1, 1000);
+    if (prevMusic === nextMusic) return;
+    if (prevMusic) prevMusic.stop();
+
+    if (nextMusic) {
+        nextMusic.play();
+        nextMusic.fade(0, 0.1, 1000);
+    }
+
+    activeMusic = nextMusic;
 }
 
 function fadeMusicOut(duration=1) {
@@ -98,7 +121,7 @@ function makeDraggable(handleElement, draggedElement, boundingElement=undefined)
         draggedElement.style.left = minX + 'px';
         draggedElement.style.top = minY + 'px';
 
-        sounds.move.play();
+        sounds.clips.move.play();
     });
 }
 
@@ -110,7 +133,8 @@ async function flashElement(element, duration=.1) {
 
 let prevZ = 0;
 
-async function exclusiveWindow(windowElement) {
+async function exclusiveWindow(id) {
+    const windowElement = document.getElementById(id);
     const screen = document.getElementById("screen");
     screen.style.setProperty("opacity", "100%");
     screen.style.removeProperty("pointer-events");
@@ -133,7 +157,9 @@ async function focusWindow(windowElement) {
     windowElement.classList.remove("attention");
 }
 
-async function attentionWindow(windowElement) {
+async function attentionWindow(id) {
+    sounds.clips.notification.play();
+    const windowElement = document.getElementById(id);
     windowElement.classList.add("attention");
 }
 
@@ -187,7 +213,7 @@ async function closeWindow(windowElement) {
 }
 
 async function closeAll(...except) {
-    const exceptions = new Set(except);
+    const exceptions = new Set(except.map((id) => document.getElementById(id)));
 
     document.querySelectorAll(".window").forEach((windowElement) => {
         if (exceptions.has(windowElement)) return;
@@ -202,7 +228,7 @@ function applyMacros(element) {
         const href = anchorElement.getAttribute("href");
         if (href.startsWith("#")) {
             anchorElement.addEventListener("click", (event) => {
-                sounds.click.play();
+                sounds.clips.click.play();
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -237,37 +263,16 @@ function makeWindow(id) {
     
     makeDraggable(titleElement, windowElement);
     closeButton?.addEventListener("click", () => {
-        sounds.click.play();
+        sounds.clips.click.play();
         closeWindow(windowElement);
     });
 
     bodyElement.addEventListener("scroll", (event) => {
-        sounds.move.play();
+        sounds.clips.move.play();
         focusWindow(windowElement);
     });
 
     document.body.append(windowElement);
-
-    return windowElement;
-}
-
-/**
- * @param {HTMLElement} container 
- */
-async function setupWindow(container, closed=false) {
-    const id = container.id;
-    const windowElement = document.getElementById(id) ?? makeWindow(id);
-
-    windowElement.querySelector(".window-title").replaceChildren(container.getAttribute("title"));
-    windowElement.querySelector(".window-body").replaceChildren(...extractBody(container));
-    windowElement.querySelector(".window-close").hidden = container.hasAttribute("data-pinned");
-
-    windowElement.title = container.title;
-    windowElement.classList.add(...container.classList);
-
-    if (!closed && container.hasAttribute("data-open")) {
-        openWindow(id);
-    }
 
     return windowElement;
 }
@@ -309,13 +314,59 @@ async function confineWindows() {
     });
 }
 
-async function loadWindows(id, closed=false) {
+/**
+ * @param {HTMLElement} root
+ * @returns {JupiterDataWindow[]}
+ */
+function loadWindowDatasFromDOM(root) {
+    const elements = Array.from(root.querySelectorAll("div > div"));
+    return elements.map((element) => {
+        return {
+            id: element.getAttribute("id"),
+            title: element.getAttribute("title"),
+            body: element.innerHTML,
+            classes: Array.from(element.classList),
+            pinned: element.hasAttribute("data-pinned"),
+            open: element.hasAttribute("data-open"),
+        };
+    });
+}
+
+async function loadWindows(id) {
     const template = document.getElementById(id);
+    template.remove();
+
     template.content.querySelectorAll("p.redacted s").forEach((element) => {
         element.textContent = element.textContent.replaceAll(/[A-z]/g, "X");
     });
-    template.content.querySelectorAll("div > div").forEach((element) => setupWindow(element, closed));
-    template.remove();
+
+    const data = loadWindowDatasFromDOM(template.content);
+    data.forEach((data) => WINDOW_DATA.set(data.id, data));
+    data.forEach((data) => setupWindow2(data));
+}
+
+/**
+ * @param {JupiterDataWindow} data 
+ * @return {HTMLElement}
+ */
+ function setupWindow2(data) {
+    if (document.getElementById(data.id)) return;
+
+    const windowElement = makeWindow(data.id);
+
+    windowElement.querySelector(".window-title").replaceChildren(data.title);
+    windowElement.querySelector(".window-body").innerHTML = data.body;
+    extractBody(windowElement.querySelector(".window-body"));
+    windowElement.querySelector(".window-close").hidden = data.pinned;
+
+    windowElement.title = data.title;
+    windowElement.classList.add(...data.classes);
+
+    if (data.open) {
+        OPEN_WINDOW(data.id);
+    }
+
+    return windowElement;
 }
 
 async function showTitle(title) {
