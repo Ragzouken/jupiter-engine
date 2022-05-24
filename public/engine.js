@@ -5,10 +5,15 @@
  * @property {string} body
  * @property {string[]} classes
  * @property {boolean} pinned
- * @property {boolean} open
  */
 
+document.addEventListener("DOMContentLoaded", setup);
+
 const WINDOW_DATA = new Map();
+
+async function SHOW_TITLE(text) {
+    await showTitle(text);
+}
 
 async function OPEN_WINDOW(id) {
     const data = WINDOW_DATA.get(id);
@@ -284,6 +289,22 @@ function replaceWindow(targetId, sourceId) {
     target.querySelector(".window-body").replaceChildren(...source.querySelector(".window-body").children);
 }
 
+function preventSelect() {
+    document.body.addEventListener("selectstart", (event) => {
+        if (event.target != event.currentTarget) return; 
+        event.preventDefault();
+        // event.stopPropagation();
+    });
+}
+
+async function setup() {
+    confineWindows();
+    preventSelect();
+
+    await loadWindows("window-data");
+    await start();
+}
+
 async function confineWindows() {
     window.requestAnimationFrame(confineWindows);
     
@@ -319,7 +340,7 @@ async function confineWindows() {
  * @returns {JupiterDataWindow[]}
  */
 function loadWindowDatasFromDOM(root) {
-    const elements = Array.from(root.querySelectorAll("div > div"));
+    const elements = Array.from(root.querySelectorAll(":scope > div"));
     return elements.map((element) => {
         return {
             id: element.getAttribute("id"),
@@ -327,7 +348,6 @@ function loadWindowDatasFromDOM(root) {
             body: element.innerHTML,
             classes: Array.from(element.classList),
             pinned: element.hasAttribute("data-pinned"),
-            open: element.hasAttribute("data-open"),
         };
     });
 }
@@ -335,10 +355,6 @@ function loadWindowDatasFromDOM(root) {
 async function loadWindows(id) {
     const template = document.getElementById(id);
     template.remove();
-
-    template.content.querySelectorAll("p.redacted s").forEach((element) => {
-        element.textContent = element.textContent.replaceAll(/[A-z]/g, "X");
-    });
 
     const data = loadWindowDatasFromDOM(template.content);
     data.forEach((data) => WINDOW_DATA.set(data.id, data));
@@ -361,10 +377,6 @@ async function loadWindows(id) {
 
     windowElement.title = data.title;
     windowElement.classList.add(...data.classes);
-
-    if (data.open) {
-        OPEN_WINDOW(data.id);
-    }
 
     return windowElement;
 }
