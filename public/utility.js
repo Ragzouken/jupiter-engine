@@ -23,3 +23,6 @@ function sleep(milliseconds) {
 function randFloat(min, max) {
     return min + (max - min) * Math.random();
 }
+
+// async equivalent of Function constructor
+const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;

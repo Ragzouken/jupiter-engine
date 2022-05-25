@@ -6,13 +6,56 @@
     <script src="./howler.core.min.js"></script>
     <script src="./utility.js"></script>
     <script src="./engine.js"></script>
-    <script src="./start.js"></script>
+    <style>
+      .inteltrax {
+          --light: pink;
+      }
+
+      .government {
+          --light: lightcyan;
+      }
+
+      .inbox {
+          --light: MediumAquamarine;
+      }
+
+      .news {
+          --light: OldLace;
+      }
+
+      .corporate {
+          --light: lightcyan;
+      }
+
+      .science {
+          --light: burlywood;
+      }
+
+      .rumour {
+          --light: SlateBlue;
+      }
+
+      .opinion {
+          --light: Moccasin;
+      }
+    </style>
   </head>
   <body>
     <div id="screen"></div>
     <div id="title-board" hidden="hidden">
       <div id="title">shuttle five</div>
     </div>
+    <template id="audio-data">
+      <audio id="audio/clips/click" src="assets/click.mp3"></audio>
+      <audio id="audio/clips/move" src="assets/buzz-grain.mp3"></audio>
+      <audio id="audio/clips/notification" src="assets/notification.mp3"></audio>
+
+      <audio id="audio/music/mundane" src="assets/info-loop.mp3" loop volume=".1"></audio>
+      <audio id="audio/music/mystery" src="assets/sssm-tapes.mp3" loop volume=".1"></audio>
+      <audio id="audio/music/discovery" src="assets/sssm-warfare.mp3" loop volume=".1"></audio>
+      <audio id="audio/music/evolution" src="assets/sssm-flesh.mp3" loop volume=".1"></audio>
+      <audio id="audio/music/credits" src="assets/credits-loop.mp3" loop volume=".1"></audio>
+    </template>
     <template id="window-data">
       <div class="inbox" id="inbox" title="darkmail - inbox" data-open="data-open" data-pinned="data-pinned">
         <h1>inbox</h1>
@@ -344,5 +387,105 @@
         <p>years away from certification, the production method of inteltrax's new drug remains a trade secret, raising many questions about the sources for euphoron in current circulation  </p><img src="assets/overdose.png" alt="drug overdose"/>
       </div>
     </template>
+    <template id="event-data">
+      <script id="events/start">
+        await RUN_EVENT("events/ch1/begin");
+      </script>
+      <script id="events/silence">
+        FADE_MUSIC(1);
+      </script>
+
+      <script id="events/ch1/begin">
+        await SHOW_TITLE("in the shadow of jupiter");
+        PLAY_MUSIC("audio/music/mundane");
+        OPEN_WINDOW("inbox");
+      </script>
+      <script id="events/ch1/solved">
+        await DELAY(3);
+        REPLACE_WINDOW("inbox", "inbox-update-2");
+        PING_WINDOW("inbox");
+      </script>
+      <script id="events/ch1/ending">
+        PLAY_MUSIC("audio/music/mystery");
+        await FADE_ALL_EXCEPT("shuttle-five-lost");
+      </script>
+
+      <script id="events/ch2/begin">
+        PLAY_MUSIC("audio/music/mystery");
+        await SHOW_TITLE("the blood of the gods");
+        OPEN_WINDOW("inbox-lab");
+      </script>
+      <script id="events/ch2/approval">
+        await DELAY(randFloat(2, 4));
+        REPLACE_WINDOW("inbox-lab", "inbox-lab-update-1");
+        PING_WINDOW("inbox-lab");
+      </script>
+      <script id="events/ch2/breakthrough">
+        await DELAY(randFloat(2, 4));
+        REPLACE_WINDOW("inbox-lab", "inbox-lab-update-2");
+        PING_WINDOW("inbox-lab");
+      </script>
+      <script id="events/ch2/ending">
+        PLAY_MUSIC("audio/music/evolution");
+        await FADE_ALL_EXCEPT("inhibitor-found");
+      </script>
+      
+      <script id="events/ch3/begin">
+        PLAY_MUSIC("audio/music/evolution");
+        await SHOW_TITLE("ideation");
+        OPEN_WINDOW("inbox-3");
+      </script>
+      <script id="events/ch3/trending">
+        await DELAY(randFloat(2, 4));
+        REPLACE_WINDOW("inbox-3", "inbox-3-update-1");
+        PING_WINDOW("inbox-3");
+      </script>
+      <script id="events/ch3/ending">
+        PLAY_MUSIC("audio/music/credits");
+        await FADE_ALL_EXCEPT("rumour-3-shuttle-five-truth");
+      </script>
+
+      <script id="events/credits">
+        PLAY_MUSIC("audio/music/credits");
+        await DELAY(5);
+        OPEN_WINDOW("credits-1");
+        await DELAY(2.5);
+        OPEN_WINDOW("credits-2");
+        await DELAY(2.5);
+        OPEN_WINDOW("credits-3");
+        await DELAY(2.5);
+        OPEN_WINDOW("credits-4");
+        await DELAY(2.5);
+        OPEN_WINDOW("credits-5");
+        await DELAY(1.5);
+        OPEN_WINDOW("credits-6");
+        await DELAY(5);
+        OPEN_WINDOW("credits-music");
+        await DELAY(1);
+        OPEN_WINDOW("credits-sounds");
+        await DELAY(2);
+        OPEN_WINDOW("credits-thanks");
+      </script>
+    </template>
+    <script>
+      RUN_EVENT_AFTER_SEEN("events/ch1/solved", ["inteltrax-homepage", "deep-space-psychometrics-info"]);
+      RUN_EVENT_AFTER_SEEN("silence", ["email-3"]);
+      RUN_EVENT_AFTER_SEEN("events/ch1/ending", ["shuttle-five-lost"]);
+
+      RUN_EVENT_AFTER_CLOSED("events/ch2/begin", ["shuttle-five-lost"]);
+
+      RUN_EVENT_AFTER_SEEN("events/ch2/approval", ["news-shuttle-hope"]);
+      RUN_EVENT_AFTER_SEEN("events/ch2/breakthrough", ["lab-status", "lab-specimen", "lab-vocal", "nerve-analysis"]);
+      RUN_EVENT_AFTER_SEEN("silence", ["lab-email-3"]);
+      RUN_EVENT_AFTER_SEEN("events/ch2/ending", ["inhibitor-found"]);
+
+      RUN_EVENT_AFTER_CLOSED("events/ch3/begin", ["inhibitor-found"]);
+
+      RUN_EVENT_AFTER_SEEN("events/ch3/trending", ["inteltrax-3-euphoron-control", "rumour-3-spatial-pinch"]);
+      RUN_EVENT_AFTER_SEEN("silence", ["email-3-end"]);
+      RUN_EVENT_AFTER_SEEN("events/ch3/ending", ["rumour-3-shuttle-five-truth"]);
+
+      RUN_EVENT_AFTER_CLOSED("events/credits", ["rumour-3-shuttle-five-truth"]);
+    </script>
   </body>
 </html>

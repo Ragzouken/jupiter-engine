@@ -21,6 +21,10 @@ async function OPEN_WINDOW(id) {
     await openWindow(id);
 }
 
+async function CLOSE_WINDOW(id) {
+    await closeWindow(document.getElementById(id));
+}
+
 async function PING_WINDOW(id) {
     await attentionWindow(id);
 }
@@ -60,21 +64,18 @@ function RUN_EVENT(event) {
 
 const DELAY = (seconds) => sleep(seconds * 1000);
 
-const sounds = {
-    music: {},
-    clips: {},
-}
+const SOUNDS = new Map();
 
 function ADD_MUSIC(id, src, volume=1, loop=true) {
-    sounds.music[id] = new Howl({ src: [src], volume, loop });
+    SOUNDS.set("audio/music/" + id, new Howl({ src: [src], volume, loop }));
 }
 
-function ADD_CLIP(id, src, volume) {
-    sounds.clips[id] = new Howl({ src: [src], volume })
+function PLAY_CLIP(id) {
+    SOUNDS.get(id).play();
 }
 
 function PLAY_MUSIC(id) {
-    setMusic(sounds.music[id]);
+    setMusic(SOUNDS.get(id));
 }
 
 async function FADE_MUSIC(duration) {
@@ -150,7 +151,7 @@ function makeDraggable(handleElement, draggedElement, boundingElement=undefined)
         draggedElement.style.left = minX + 'px';
         draggedElement.style.top = minY + 'px';
 
-        sounds.clips.move.play();
+        PLAY_CLIP("audio/clips/move");
     });
 }
 
@@ -187,7 +188,7 @@ async function focusWindow(windowElement) {
 }
 
 async function attentionWindow(id) {
-    sounds.clips.notification.play();
+    PLAY_CLIP("audio/clips/notification");
     const windowElement = document.getElementById(id);
     windowElement.classList.add("attention");
 }
@@ -257,7 +258,7 @@ function applyMacros(element) {
         const href = anchorElement.getAttribute("href");
         if (href.startsWith("#")) {
             anchorElement.addEventListener("click", (event) => {
-                sounds.clips.click.play();
+                PLAY_CLIP("audio/clips/click");
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -288,16 +289,16 @@ function makeWindow(id) {
 
     windowElement.id = id;
     windowElement.hidden = true;
-    windowElement.addEventListener("mousedown", (event) => focusWindow(windowElement));
+    windowElement.addEventListener("mousedown", () => focusWindow(windowElement));
     
     makeDraggable(titleElement, windowElement);
     closeButton?.addEventListener("click", () => {
-        sounds.clips.click.play();
+        PLAY_CLIP("audio/clips/click");
         closeWindow(windowElement);
     });
 
-    bodyElement.addEventListener("scroll", (event) => {
-        sounds.clips.move.play();
+    bodyElement.addEventListener("scroll", () => {
+        PLAY_CLIP("audio/clips/move");
         focusWindow(windowElement);
     });
 
@@ -326,7 +327,23 @@ async function setup() {
     preventSelect();
 
     await loadWindows("window-data");
-    await RUN_EVENT("start");
+
+    const eventData = document.getElementById("event-data");
+    eventData.remove();
+    addEventsFromDOM(eventData.content);
+
+    const audioData = document.getElementById("audio-data");
+    audioData.remove();
+    audioData.content.querySelectorAll(":scope > audio").forEach((element) => {
+        const audio = new Howl({ 
+            src: element.getAttribute("src"), 
+            volume: parseFloat(element.getAttribute("volume") ?? "1"),
+            loop: element.hasAttribute("loop"),
+        });
+        SOUNDS.set(element.getAttribute("id"), audio);
+    });
+
+    await RUN_EVENT("events/start");
 }
 
 async function confineWindows() {
@@ -373,6 +390,17 @@ function loadWindowDatasFromDOM(root) {
             classes: Array.from(element.classList),
             pinned: element.hasAttribute("data-pinned"),
         };
+    });
+}
+
+/**
+ * @param {HTMLElement} root
+ */
+function addEventsFromDOM(root) {
+    const elements = Array.from(root.querySelectorAll(":scope > script"));
+    elements.forEach((element) => {
+        const func = new AsyncFunction("", element.textContent);
+        EVENTS.set(element.getAttribute("id"), func);
     });
 }
 

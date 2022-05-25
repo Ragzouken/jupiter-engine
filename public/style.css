@@ -63,45 +63,8 @@ html, body {
     user-select: contain;
 }
 
-.inteltrax {
-    --light: pink;
-}
-
-.government {
-    --light: lightcyan;
-}
-
-.inbox {
-    --light: MediumAquamarine;
-}
-
-.news {
-    --light: OldLace;
-}
-
-.corporate {
-    --light: lightcyan;
-}
-
-.science {
-    --light: burlywood;
-}
-
-.rumour {
-    --light: SlateBlue;
-}
-
-.opinion {
-    --light: Moccasin;
-}
-
 p.quote {
     font-style: italic;
-}
-
-.redacted s {
-    background-color: var(--light);
-    color: transparent;
 }
 
 .credits.window {
