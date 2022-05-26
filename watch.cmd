@@ -1,1 +1,1 @@
-light-server-pug -o -s public -w "./public/*.js" -w "./public/*.css # # reloadcss"
+light-server-pug -o -s public -w "./public/*.*" -w "./public/*.css # # reloadcss"

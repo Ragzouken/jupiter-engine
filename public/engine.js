@@ -397,10 +397,18 @@ function loadWindowDatasFromDOM(root) {
  * @param {HTMLElement} root
  */
 function addEventsFromDOM(root) {
-    const elements = Array.from(root.querySelectorAll(":scope > script"));
-    elements.forEach((element) => {
+    const scripts = Array.from(root.querySelectorAll(":scope > script"));
+    scripts.forEach((element) => {
         const func = new AsyncFunction("", element.textContent);
         EVENTS.set(element.getAttribute("id"), func);
+    });
+
+    const triggers = Array.from(root.querySelectorAll(":scope > event-trigger"));
+    triggers.forEach((element) => {
+        const id = element.getAttribute("event");
+        const opened = element.getAttribute("opened")?.split(" ") ?? [];
+        const closed = element.getAttribute("closed")?.split(" ") ?? [];
+        openedClosedTrigger(opened, closed).then(() => RUN_EVENT(id));
     });
 }
 
@@ -450,6 +458,34 @@ async function showTitle(title) {
 }
 
 const events = new EventTarget();
+
+async function openedClosedTrigger(opened, closed) {
+    return new Promise((resolve, reject) => {
+        opened = new Set(opened);
+        closed = new Set(closed);
+
+        function check() {
+            if (opened.size === 0 && closed.size === 0) {
+                resolve();
+                events.removeEventListener("opened", onOpened);
+                events.removeEventListener("closed", onClosed);
+            }
+        }
+
+        function onOpened({ detail: id }) {
+            opened.delete(id);
+            check();
+        }
+
+        function onClosed({ detail: id }) {
+            closed.delete(id);
+            check();
+        }
+
+        events.addEventListener("opened", onOpened);
+        events.addEventListener("closed", onClosed);
+    });
+}
 
 async function openedTrigger(...ids) {
     return new Promise((resolve, reject) => {

@@ -52,7 +52,6 @@
 
       <audio id="audio/music/mundane" src="assets/info-loop.mp3" loop volume=".1"></audio>
       <audio id="audio/music/mystery" src="assets/sssm-tapes.mp3" loop volume=".1"></audio>
-      <audio id="audio/music/discovery" src="assets/sssm-warfare.mp3" loop volume=".1"></audio>
       <audio id="audio/music/evolution" src="assets/sssm-flesh.mp3" loop volume=".1"></audio>
       <audio id="audio/music/credits" src="assets/credits-loop.mp3" loop volume=".1"></audio>
     </template>
@@ -466,26 +465,22 @@
         await DELAY(2);
         OPEN_WINDOW("credits-thanks");
       </script>
+
+      <event-trigger opened="inteltrax-homepage deep-space-psychometrics-info" event="events/ch1/solved"></event-trigger>
+      <event-trigger opened="email-3" event="events/silence"></event-trigger>
+      <event-trigger opened="shuttle-five-lost" event="events/ch1/ending"></event-trigger>
+      <event-trigger closed="shuttle-five-lost" event="events/ch2/begin"></event-trigger>
+
+      <event-trigger opened="news-shuttle-hope" event="events/ch2/approval"></event-trigger>
+      <event-trigger opened="lab-status lab-specimen lab-vocal nerve-analysis" event="events/ch2/breakthrough"></event-trigger>
+      <event-trigger opened="lab-email-3" event="events/silence"></event-trigger>
+      <event-trigger opened="inhibitor-found" event="events/ch2/ending"></event-trigger>
+      <event-trigger closed="inhibitor-found" event="events/ch3/begin"></event-trigger>
+
+      <event-trigger opened="inteltrax-3-euphoron-control rumour-3-spatial-pinch" event="events/ch3/trending"></event-trigger>
+      <event-trigger opened="email-3-end" event="events/silence"></event-trigger>
+      <event-trigger opened="rumour-3-shuttle-five-truth" event="events/ch3/ending"></event-trigger>
+      <event-trigger closed="rumour-3-shuttle-five-truth" event="events/credits"></event-trigger>
     </template>
-    <script>
-      RUN_EVENT_AFTER_SEEN("events/ch1/solved", ["inteltrax-homepage", "deep-space-psychometrics-info"]);
-      RUN_EVENT_AFTER_SEEN("silence", ["email-3"]);
-      RUN_EVENT_AFTER_SEEN("events/ch1/ending", ["shuttle-five-lost"]);
-
-      RUN_EVENT_AFTER_CLOSED("events/ch2/begin", ["shuttle-five-lost"]);
-
-      RUN_EVENT_AFTER_SEEN("events/ch2/approval", ["news-shuttle-hope"]);
-      RUN_EVENT_AFTER_SEEN("events/ch2/breakthrough", ["lab-status", "lab-specimen", "lab-vocal", "nerve-analysis"]);
-      RUN_EVENT_AFTER_SEEN("silence", ["lab-email-3"]);
-      RUN_EVENT_AFTER_SEEN("events/ch2/ending", ["inhibitor-found"]);
-
-      RUN_EVENT_AFTER_CLOSED("events/ch3/begin", ["inhibitor-found"]);
-
-      RUN_EVENT_AFTER_SEEN("events/ch3/trending", ["inteltrax-3-euphoron-control", "rumour-3-spatial-pinch"]);
-      RUN_EVENT_AFTER_SEEN("silence", ["email-3-end"]);
-      RUN_EVENT_AFTER_SEEN("events/ch3/ending", ["rumour-3-shuttle-five-truth"]);
-
-      RUN_EVENT_AFTER_CLOSED("events/credits", ["rumour-3-shuttle-five-truth"]);
-    </script>
   </body>
 </html>
