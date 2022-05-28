@@ -63,6 +63,36 @@ html, body {
     user-select: contain;
 }
 
+#debug.window {
+    user-select: none;
+
+    width: 640px;
+}
+
+#debug .window-title {
+    width: calc(640px - 32px);
+}
+
+#debug .window-body {
+    display: flex; flex-direction: row;
+    padding: 1em;
+    gap: .5em;
+    overflow: hidden;
+}
+
+#debug button {
+    font-size: inherit;
+}
+
+#debug select {
+    flex: 1;
+
+    font-family: inherit;
+    font-size: inherit;
+    background: transparent;
+    color: inherit;
+}
+
 p.quote {
     font-style: italic;
 }

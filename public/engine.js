@@ -343,7 +343,50 @@ async function setup() {
         SOUNDS.set(element.getAttribute("id"), audio);
     });
 
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "q" && event.ctrlKey) {
+            openDebugWindow();
+        }
+    });
+
     await RUN_EVENT("events/start");
+}
+
+function openDebugWindow() {
+    const window = setupWindow2({
+        id: "debug",
+        title: "[DEBUG]",
+        body: "",
+        classes: [],
+        pinned: false,
+    });
+
+
+    const events = Array.from(EVENTS.keys());
+    const eventOptions = events.map((id) => html("option", { value: id }, id));
+    const eventSelect = html("select", { size: 4 }, ...eventOptions);
+
+    const runEvent = html("button", {}, "run event");
+    runEvent.addEventListener("click", () => RUN_EVENT(eventSelect.value));
+    const eventButtons = html("div", { style: "display: flex; flex-direction: row; gap: .5em;"}, runEvent);
+
+    const windows = Array.from(WINDOW_DATA.keys());
+    const windowOptions = windows.map((id) => html("option", { value: id }, id));
+    const windowSelect = html("select", { size: 4 }, ...windowOptions);
+
+    const openWindowB = html("button", {}, "open window");
+    openWindowB.addEventListener("click", () => OPEN_WINDOW(windowSelect.value));
+    const closeWindowB = html("button", {}, "close window");
+    closeWindowB.addEventListener("click", () => CLOSE_WINDOW(windowSelect.value));
+    const windowButtons = html("div", { style: "display: flex; flex-direction: row; gap: .5em;"}, openWindowB, closeWindowB);
+
+    const left = html("div", { style: "display: flex; flex-direction: column; gap: .5em; flex: 1;" }, eventSelect, eventButtons);
+    const right = html("div", { style: "display: flex; flex-direction: column; gap: .5em; flex: 1;" }, windowSelect, windowButtons);
+
+    const body = window.querySelector(".window-body");
+    body.replaceChildren(left, right);
+
+    openWindow("debug");
 }
 
 async function confineWindows() {
@@ -426,7 +469,7 @@ async function loadWindows(id) {
  * @return {HTMLElement}
  */
  function setupWindow2(data) {
-    if (document.getElementById(data.id)) return;
+    if (document.getElementById(data.id)) return document.getElementById(data.id);
 
     const windowElement = makeWindow(data.id);
 
