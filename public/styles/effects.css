@@ -1,0 +1,40 @@
+.flash {
+  filter: invert();
+}
+
+.glow {
+  animation-name: glow;
+  animation-direction: alternate;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes glow {
+  from {
+    filter: brightness(10%);
+  }
+
+  to {
+    filter: brightness(35%)
+  }
+}
+
+.attention {
+  animation-name: attention;
+  animation-direction: alternate;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+
+@keyframes attention {
+  from {
+    filter: brightness(50%);
+  }
+
+  to {
+    filter: brightness(150%);
+  }
+}

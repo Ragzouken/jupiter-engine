@@ -1,0 +1,76 @@
+@scope (article) {
+  :scope {
+    width: 320px;
+    max-height: 320px;
+  }
+
+  :scope.normal {
+    font-family: monospace;
+  }
+
+  .window-body {
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    display: flex;
+    flex-direction: column;
+    overscroll-behavior-y: none;
+
+    gap: 1rem;
+    padding: 1rem;
+
+    & h1 {
+      margin: 0;
+    }
+
+    & p {
+      margin: 0;
+    }
+
+    & img {
+      width: 100%;
+    }
+  }
+
+  .window-body::-webkit-scrollbar{
+        scrollbar-width: 10px;
+          width: 10px;
+  }
+
+  h1 {
+    margin: 24px;
+    font-size: unset;
+    text-align: center;
+  }
+
+  p {
+    margin: 16px;
+    text-align: justify;
+  }
+
+  p.quote {
+    font-style: italic;
+  }
+
+  ul {
+    margin: 16px;
+    margin-inline-start: 0;
+  }
+
+  a {
+    background: var(--dark);
+    color: var(--light);
+    text-decoration:underline;
+
+    &:hover {
+      background: var(--light);
+      color: var(--dark);
+    }
+
+    animation-name: link;
+    animation-direction: alternate;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+}

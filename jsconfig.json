@@ -7,5 +7,5 @@
       "target": "esnext",
       "checkJs": true
     },
-    "include": ["public/*.js"]
+    "include": ["public/**/*.js"]
 }
