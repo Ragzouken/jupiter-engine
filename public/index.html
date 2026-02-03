@@ -26,25 +26,19 @@
   </template>
 
   <p data-macro-links>
-    hello [ass|poo] you are [mother|fucker] goodbye
+    hello [ass|poo] you are [mother|fucker] [goodbye]
   </p>
   <p>
     hello [ass|poo] you are [mother|fucker] goodbye
   </p>
   <script>
-    function applyLinks(root) {
-      const LINK_REGEX = /\[(?<text>[^\]\|]+)\|(?<path>[^\]]+)\]/gd;
-
-      applyTreeTextRegexReplacer(root, LINK_REGEX, (groups) => {
-        const link = document.createElement("a");
-        link.textContent = groups.text;
-        link.href = `#${groups.path}`;
-        return link;
-      });
+    function LINK(text, path) {
+      return html("a", { href: `#${path}` }, text);
     }
 
-    APPLY_MACRO("[data-macro-links]", applyLinks)
-    // APPLY_MACRO("p:nth-child(3)", applyLinks)
+    const LINKS_MACRO = TEXT_MARK_MACRO(LINK);
+
+    APPLY_QUERY_MACRO("[data-macro-links]", LINKS_MACRO)
   </script>
 </body>
 

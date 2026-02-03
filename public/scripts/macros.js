@@ -1,34 +1,61 @@
 /**
- * @param {string} query 
- * @param {(element: Element) => {}} apply 
+ * @callback Macro
+ * @param {Element} root
  */
-function APPLY_MACRO(query, apply) {
+
+/**
+ * @param {string} query 
+ * @param {Macro} macro 
+ */
+function APPLY_QUERY_MACRO(query, macro) {
   for (const element of document.querySelectorAll(query)) {
-    apply(element);
+    macro(element);
   }
 }
 
 /**
- * @param {Element} root
+ * Return a macro that looks at all text nodes under the root and replaces each
+ * of them with the element returned by calling replacer with the node's text
+ * content.
+ * 
  * @param {(text: string) => string} replacer
+ * @returns {Macro}
  */
-function applyTreeTextToTextReplacer(root, replacer) {
+const TEXT_REPLACER_MACRO = (replacer) => (root) => {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   while (walker.nextNode())
     walker.currentNode.textContent = replacer(walker.currentNode.textContent);
 }
 
-/**
- * @param {Element} root 
- * @param {RegExp} regex
- * @param {(match: Object.<string, string>) => Element} replacer 
- */
-function applyTreeTextRegexReplacer(root, regex, replacer) {
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+const MARK_REGEX = /\[(?<text>[^\]\|]+)(\|(?<extra>[^\]]+))?\]/gd;
 
+/**
+ * Return a macro that looks at all text nodes under the root and replaces
+ * instances of [text|extra] with the element returned by calling replacer with
+ * the matched text and extra strings. 
+ * 
+ * @param {(text: string, extra: string) => string | Node} replacer 
+ * @returns {Macro}
+ */
+const TEXT_MARK_MACRO = (replacer) =>
+  REGEX_TEXT_REPLACER_MACRO(
+    MARK_REGEX,
+    ({ text, extra }) => replacer(text, extra),
+  );
+
+/**
+ * Return a macro that looks at all text nodes under the root and replaces text
+ * matched with regex with the element returned by calling replacer with the
+ * regex match named groups.
+ * 
+ * @param {RegExp} regex 
+ * @param {(match: Object.<string, string>) => string | Node} replacer 
+ * @returns {Macro} 
+ */
+const REGEX_TEXT_REPLACER_MACRO = (regex, replacer) => (root) => {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
     const current = /** @type {Text} */ (walker.currentNode);
-
     const [match,] = current.textContent.matchAll(regex);
 
     if (match === undefined)
