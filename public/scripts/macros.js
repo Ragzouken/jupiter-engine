@@ -4,14 +4,43 @@
  */
 
 /**
+ * 
+ * 
+ * @template T
+ * @param {string} tquery 
+ * @param {string} query 
+ * @param {(element: Element) => T} load
+ * @returns {Map<string, T>} 
+ */
+function TEMPLATE_QUERY_MAP(tquery, query, load) {
+  const entries = ALL_TEMPLATE(tquery, query).map((element) => [element.id, load(element)]);
+  return new Map(entries);
+}
+
+/**
+ * @param {string} query 
+ * @param {ParentNode} root 
+ */
+function* ALL(query, root = document) {
+  for (const element of root.querySelectorAll(query))
+    yield element;
+}
+
+/**
+ * @param {string} tquery 
+ * @param {string} query 
+ */
+function* ALL_TEMPLATE(tquery, query) {
+  for (const template of document.querySelectorAll(tquery))
+    for (const element of template.content.querySelectorAll(query))
+      yield element;
+}
+
+/**
  * @param {string} query 
  * @param {Macro} macro 
  */
-function APPLY_QUERY_MACRO(query, macro) {
-  for (const element of document.querySelectorAll(query)) {
-    macro(element);
-  }
-}
+const APPLY_QUERY_MACRO = (query, macro) => ALL(query).forEach(macro);
 
 /**
  * Return a macro that looks at all text nodes under the root and replaces each

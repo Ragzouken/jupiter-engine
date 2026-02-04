@@ -25,6 +25,36 @@
     <audio id="audio/clips/none" src="assets/none.mp3"></audio>
   </template>
 
+  <template data-events>
+    <script id="events/poo">
+      console.log("ASS")
+    </script>
+  </template>
+
+  <script>
+    const LOAD_EVENT_DATA = (element) => new AsyncFunction("", element.textContent);
+
+    const EVENTS = TEMPLATE_QUERY_MAP(
+      "template[data-events]",
+      "script",
+      LOAD_EVENT_DATA,
+    )
+  </script>
+
+  <script>
+    const LOAD_AUDIO_DATA = (element) => new Howl({
+      src: element.getAttribute("src"),
+      volume: parseFloat(element.getAttribute("volume") ?? "1"),
+      loop: element.hasAttribute("loop"),
+    });
+
+    const SOUNDS = TEMPLATE_QUERY_MAP(
+      "template[data-audio]", 
+      "audio",
+      LOAD_AUDIO_DATA,
+    );
+  </script>
+
   <p data-macro-links>
     hello [ass|poo] you are [mother|fucker] [goodbye]
   </p>
@@ -38,7 +68,8 @@
 
     const LINKS_MACRO = TEXT_MARK_MACRO(LINK);
 
-    APPLY_QUERY_MACRO("[data-macro-links]", LINKS_MACRO)
+    ALL("[data-macro-links]").forEach(LINKS_MACRO);
+    // APPLY_QUERY_MACRO("[data-macro-links]", LINKS_MACRO)
   </script>
 </body>
 
