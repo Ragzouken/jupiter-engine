@@ -61,12 +61,14 @@ const REGEX_TEXT_REPLACER_MACRO = (regex, replacer) => (root) => {
     if (match === undefined)
       continue;
 
+    // split into three parts, replace middle
     const [first, last] = match.indices[0];
     const element = replacer(match.groups);
 
     walker.currentNode = current.splitText(last);
     current.splitText(first).replaceWith(element);
 
+    // nextNode() will be right side of the split
     walker.previousNode();
   }
 }
