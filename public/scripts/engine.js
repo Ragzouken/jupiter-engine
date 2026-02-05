@@ -44,33 +44,12 @@ async function REPLACE_WINDOW(targetId, sourceId) {
   replaceWindow(targetId, sourceId);
 }
 
-const EVENTS = new Map();
-
-function ADD_EVENT(id, func) {
-  EVENTS.set(id, func);
-}
-
 function RUN_EVENT_AFTER_SEEN(event, ids) {
   return openedTrigger(...ids).then(() => EVENTS.get(event)());
 }
 
 function RUN_EVENT_AFTER_CLOSED(event, ids) {
   return closedTrigger(...ids).then(() => EVENTS.get(event)());
-}
-
-function RUN_EVENT(id) {
-  const event = EVENTS.get(id);
-
-  if (event === undefined) {
-    console.trace(`NO EVENT "${id}"`);
-  } else {
-    try {
-      return event();
-    } catch (error) {
-      console.log(`ERROR IN EVENT "${id}"`);
-      throw error;
-    }
-  }
 }
 
 const DELAY = (seconds) => sleep(seconds * 1000);
@@ -81,47 +60,6 @@ function ADD_WORDS(...words) {
 
 function CLEAR_WORDS() {
   return clearWords();
-}
-
-const SOUNDS = new Map();
-
-function ADD_MUSIC(id, src, volume = 1, loop = true) {
-  SOUNDS.set("audio/music/" + id, new Howl({ src: [src], volume, loop }));
-}
-
-function PLAY_CLIP(id) {
-  SOUNDS.get(id).play();
-}
-
-function PLAY_MUSIC(id) {
-  setMusic(SOUNDS.get(id));
-}
-
-async function FADE_MUSIC(duration) {
-  fadeMusicOut(duration);
-  return DELAY(duration);
-}
-
-let activeMusic;
-
-function setMusic(nextMusic) {
-  const prevMusic = activeMusic;
-
-  if (prevMusic === nextMusic) return;
-  if (prevMusic) prevMusic.stop();
-
-  if (nextMusic) {
-    nextMusic.play();
-    nextMusic.fade(0, 0.1, 1000);
-  }
-
-  activeMusic = nextMusic;
-}
-
-function fadeMusicOut(duration = 1) {
-  if (activeMusic) {
-    activeMusic.fade(activeMusic._volume, 0, duration * 1000);
-  }
 }
 
 function HTML(source) {

@@ -7,6 +7,10 @@
   <script src="./scripts/howler.core.min.js"></script>
   <script src="./scripts/macros.js"></script>
   <script src="./scripts/utility.js"></script>
+
+  <script src="./scripts/sounds.js"></script>
+  <script src="./scripts/events.js"></script>
+
   <!-- <script src="./scripts/engine.js"></script> -->
 
   <!-- <link rel="stylesheet" href="./styles/style.css"> -->
@@ -15,7 +19,7 @@
 </head>
 
 <body>
-  <template data-audio>
+  <template data-load-macro="sounds">
     <audio id="audio/music/amb" loop src="assets/ambience.mp3"></audio>
     <audio id="audio/clips/wow" src="assets/wow.m4a"></audio>
     <audio id="audio/clips/click" src="assets/click.mp3"></audio>
@@ -25,35 +29,11 @@
     <audio id="audio/clips/none" src="assets/none.mp3"></audio>
   </template>
 
-  <template data-events>
+  <template data-load-macro="events">
     <script id="events/poo">
       console.log("ASS")
     </script>
   </template>
-
-  <script>
-    const LOAD_EVENT_DATA = (element) => new AsyncFunction("", element.textContent);
-
-    const EVENTS = TEMPLATE_QUERY_MAP(
-      "template[data-events]",
-      "script",
-      LOAD_EVENT_DATA,
-    )
-  </script>
-
-  <script>
-    const LOAD_AUDIO_DATA = (element) => new Howl({
-      src: element.getAttribute("src"),
-      volume: parseFloat(element.getAttribute("volume") ?? "1"),
-      loop: element.hasAttribute("loop"),
-    });
-
-    const SOUNDS = TEMPLATE_QUERY_MAP(
-      "template[data-audio]", 
-      "audio",
-      LOAD_AUDIO_DATA,
-    );
-  </script>
 
   <p data-macro-links>
     hello [ass|poo] you are [mother|fucker] [goodbye]
@@ -62,6 +42,8 @@
     hello [ass|poo] you are [mother|fucker] goodbye
   </p>
   <script>
+    console.log(SOUNDS)
+
     function LINK(text, path) {
       return html("a", { href: `#${path}` }, text);
     }
@@ -69,8 +51,8 @@
     const LINKS_MACRO = TEXT_MARK_MACRO(LINK);
 
     ALL("[data-macro-links]").forEach(LINKS_MACRO);
-    // APPLY_QUERY_MACRO("[data-macro-links]", LINKS_MACRO)
   </script>
+  </div>
 </body>
 
 </html>
