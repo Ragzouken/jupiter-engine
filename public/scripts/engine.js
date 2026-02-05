@@ -166,8 +166,6 @@ async function attentionWindow(id) {
   windowElement.classList.add("attention");
 }
 
-const WORDS = new Set();
-
 const opened = new Set();
 const closedWindows = new Set();
 
@@ -229,7 +227,6 @@ async function openWindow(id, autoclose = true) {
 
   if (!opened.has(id)) {
     opened.add(id);
-    firstOpen(id);
   }
 }
 
@@ -244,7 +241,6 @@ async function closeWindow(windowElement) {
 
   if (!closedWindows.has(windowElement.id)) {
     closedWindows.add(windowElement.id);
-    firstClose(windowElement.id);
   }
 }
 
@@ -258,140 +254,7 @@ async function closeAll(...except) {
   });
 }
 
-/**
- * @param {HTMLElement} element 
- * @param {string} selector 
- * @param {(element: HTMLElement) => HTMLElement} transform 
- */
-function applyTransform(element, selector, transform) {
-  [...element.querySelectorAll(selector)].forEach((element) => {
-    const next = transform(element);
-    if (next != element) element.replaceWith(next);
-  });
-}
-
-/**
- * @param {HTMLElement} element 
- * @param {string} attribute 
- * @param {(element: HTMLElement, value: string) => Node} transform 
- */
-function applyAttributeTransform(element, attribute, transform) {
-  applyTransform(element, `[${attribute}]`, (element) => transform(element, element.getAttribute(attribute)));
-}
-
-const SCRAMBLE_IGNORE = new Set([..." ,.;:!?:'[]<>{}/\n"]);
-const SCRAMBLE_CHARS = [..."qwertyuiopasdfghjklzxcvbnm"];
-//☀☁☂☃☄★☆☇☈☉☊☋☌☍☎☏☐☑☒☓☖☗☘☙☚☛☜☞☟☠☡☢☣☤☥☦☧☨☩☪☫☬☭☮☯☰☱☲☳☴☵☶☷☸☹☺☻☼☽☾☿
-
-function scrambleChar(char) {
-  return SCRAMBLE_IGNORE.has(char) ? char : SCRAMBLE_CHARS[(Math.random() * SCRAMBLE_CHARS.length) | 0];
-}
-
-/**
- * 
- * @param {HTMLElement} element 
- * @param {string} attribute
- * @param {(node: Text) => string} transform 
- */
-function applyAttributeTextTransform(element, attribute, transform) {
-  applyAttributeTransform(element, attribute, (element, value) => {
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-    while (walker.nextNode()) {
-      walker.currentNode.textContent = transform(walker.currentNode);
-    }
-    return element;
-  });
-}
-
-function applyMacros(element) {
-  applyAttributeTransform(element, "data-macro-chat", (element) => {
-    function transformLine(line) {
-      if (line.startsWith("< ")) return html("p", { class: "left" }, line.slice(2));
-      if (line.startsWith("> ")) return html("p", { class: "right" }, line.slice(2));
-    }
-
-    const lines = element.textContent.trim().split("\n").map(l => l.trim());
-    return html("div", {}, ...lines.map(transformLine));
-  });
-
-  applyAttributeTransform(element, "data-macro-table", (element) => {
-    const regex = /\/\*(.+)\*\/(.+)/sg;
-    const matches = regex.exec(element.textContent);
-    const [, table, source] = matches;
-
-    const lines = table.trim().split("\n").map(l => l.trim());
-    const [header, ...rows] = lines;
-    const names = header.split(",");
-
-    const elements = [];
-
-    const preamble = `const { ${names} } = this;\n`;
-    const script = Function(preamble + source);
-    const defines = {}
-
-    for (const row of rows) {
-      const data = row.split(",");
-
-      for (let i = 0; i < names.length; ++i) {
-        defines[names[i]] = data[i];
-      }
-
-      elements.push(...script.call(defines));
-    }
-
-    return html("div", {}, ...elements);
-  });
-
-  applyAttributeTransform(element, "data-macro", (element) => {
-    const defines = { ARTICLE: element, ROOT: element.parentElement };
-    const names = Object.keys(defines).join(", ");
-    const preamble = `const { ${names} } = this;\n`;
-    const script = Function(preamble + element.textContent);
-    return html("div", {}, ...script.call(defines));
-  });
-
-  applyAttributeTransform(element, "data-tint", (element) => html("div", { "class": "img-tint" }, element.cloneNode()));
-  applyAttributeTransform(element, "data-link", (element, value) => html("a", { href: "#" + value }, element.cloneNode()));
-
-  element.innerHTML = element.innerHTML.replaceAll(/\[([^\]]+)\|([^\]]+)\]/g, '<a href="#$2">$1</a>');
-  element.querySelectorAll("a").forEach((anchorElement) => {
-    if (anchorElement.getAttribute("href").startsWith("#")) {
-      anchorElement.addEventListener("click", onClickAnchor);
-    }
-  });
-
-  element.querySelectorAll("[data-word-entry]").forEach((element) => {
-    element.innerHTML = element.innerHTML.replaceAll(/\[([^\]]+)]/g, '<span data-word-answer="$1"></span>');
-  });
-
-  element.querySelectorAll("[data-word-source]").forEach((element) => {
-    element.innerHTML = element.innerHTML.replaceAll(/\[([^\]]+)]/g, '<span data-word-item>$1</span>');
-  });
-
-  async function onClickAnchor(event) {
-    PLAY_CLIP("audio/clips/click");
-    event.preventDefault();
-    event.stopPropagation();
-
-    const dest = event.target.closest("a").getAttribute("href").slice(1);
-    const window = event.target.closest(".window");
-    const parent = window.getAttribute("id");
-    const path = dest.startsWith("/") ? dest.slice(1) : `${parent}/${dest}`;
-
-    await focusWindow(window);
-    await openWindow(path);
-  }
-
-  applyAttributeTextTransform(element, "data-macro-scramble", (node) => [...node.textContent].map(scrambleChar).join(""));
-}
-
 function extractBody(parentElement) {
-  try {
-    applyMacros(parentElement);
-  } catch (e) {
-    console.log(`MACROS FAILED IN`, parentElement);
-    throw e;
-  }
   return parentElement.children;
 }
 
@@ -442,21 +305,6 @@ async function setup() {
 
   await loadWindows("window-data");
 
-  const eventData = document.getElementById("event-data");
-  eventData.remove();
-  addEventsFromDOM(eventData.content);
-
-  const audioData = document.getElementById("audio-data");
-  audioData.remove();
-  audioData.content.querySelectorAll("audio").forEach((element) => {
-    const audio = new Howl({
-      src: element.getAttribute("src"),
-      volume: parseFloat(element.getAttribute("volume") ?? "1"),
-      loop: element.hasAttribute("loop"),
-    });
-    SOUNDS.set(element.getAttribute("id"), audio);
-  });
-
   document.addEventListener("keydown", (event) => {
     if (event.key === "e" && event.ctrlKey) {
       openDebugWindow();
@@ -473,7 +321,6 @@ function openDebugWindow() {
     body: "",
     classes: ['normal'],
     pinned: false,
-    background: false,
   });
 
 
@@ -571,25 +418,6 @@ function loadWindowDatasFromDOM(root) {
   });
 }
 
-/**
- * @param {HTMLElement} root
- */
-function addEventsFromDOM(root) {
-  const scripts = Array.from(root.querySelectorAll("script"));
-  scripts.forEach((element) => {
-    const func = new AsyncFunction("", element.textContent);
-    EVENTS.set(element.getAttribute("id"), func);
-  });
-
-  const triggers = Array.from(root.querySelectorAll("event-trigger"));
-  triggers.forEach((element) => {
-    const id = element.getAttribute("event");
-    const opened = element.getAttribute("opened")?.split(" ") ?? [];
-    const closed = element.getAttribute("closed")?.split(" ") ?? [];
-    openedClosedTrigger(opened, closed).then(() => RUN_EVENT(id));
-  });
-}
-
 async function loadWindows(id) {
   const template = document.getElementById(id);
   template.remove();
@@ -610,13 +438,7 @@ function setupWindow2(data) {
 
   windowElement.querySelector(".window-title").replaceChildren(data.title);
   windowElement.querySelector(".window-body").innerHTML = data.body;
-  extractBody(windowElement.querySelector(".window-body"));
   windowElement.querySelector(".window-close").hidden = data.pinned;
-  windowElement.querySelector(".window-title").hidden = data.background;
-
-  if (data.background) {
-    windowElement.classList.add("background");
-  }
 
   windowElement.title = data.title;
   windowElement.classList.add(...data.classes);
@@ -624,12 +446,6 @@ function setupWindow2(data) {
   [...windowElement.querySelectorAll("style")].forEach((style) => {
     windowElement.append(style);
   });
-
-  applyTransform(windowElement, "style", (element) => {
-    const style = element.cloneNode();
-    style.textContent = `@scope { ${element.textContent} }`;
-    return style;
-  })
 
   return windowElement;
 }
@@ -648,74 +464,4 @@ async function showTitle(title) {
   screen.style.removeProperty("pointer-events");
 
   await sleep(1000);
-}
-
-const events = new EventTarget();
-
-async function openedClosedTrigger(opened, closed) {
-  return new Promise((resolve, reject) => {
-    opened = new Set(opened);
-    closed = new Set(closed);
-
-    function check() {
-      if (opened.size === 0 && closed.size === 0) {
-        resolve();
-        events.removeEventListener("opened", onOpened);
-        events.removeEventListener("closed", onClosed);
-      }
-    }
-
-    function onOpened({ detail: id }) {
-      opened.delete(id);
-      check();
-    }
-
-    function onClosed({ detail: id }) {
-      closed.delete(id);
-      check();
-    }
-
-    events.addEventListener("opened", onOpened);
-    events.addEventListener("closed", onClosed);
-  });
-}
-
-async function openedTrigger(...ids) {
-  return new Promise((resolve, reject) => {
-    const reqs = new Set(ids);
-
-    function check({ detail: id }) {
-      reqs.delete(id);
-      if (reqs.size === 0) {
-        resolve(id);
-        events.removeEventListener("opened", check);
-      }
-    }
-
-    events.addEventListener("opened", check);
-  });
-}
-
-async function closedTrigger(...ids) {
-  return new Promise((resolve, reject) => {
-    const reqs = new Set(ids);
-
-    function check({ detail: id }) {
-      reqs.delete(id);
-      if (reqs.size === 0) {
-        resolve(id);
-        events.removeEventListener("closed", check);
-      }
-    }
-
-    events.addEventListener("closed", check);
-  });
-}
-
-async function firstOpen(id) {
-  events.dispatchEvent(new CustomEvent("opened", { detail: id }));
-}
-
-async function firstClose(id) {
-  events.dispatchEvent(new CustomEvent("closed", { detail: id }));
 }
