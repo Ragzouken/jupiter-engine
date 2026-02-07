@@ -9,8 +9,6 @@
 
 document.addEventListener("DOMContentLoaded", setup);
 
-const WINDOW_DATA = new Map();
-
 async function SHOW_TITLE(text) {
   await showTitle(text);
 }
@@ -80,7 +78,7 @@ document.addEventListener("dragend", (event) => {
  * @param {HTMLElement} draggedElement
  * @param {HTMLElement} boundingElement 
  */
-function makeDraggable(handleElement, draggedElement, boundingElement = undefined) {
+function make_draggable(handleElement, draggedElement, boundingElement = undefined) {
   boundingElement = boundingElement ?? document.querySelector("html");
   let offset;
 
@@ -268,7 +266,7 @@ function makeWindow(id) {
   windowElement.hidden = true;
   windowElement.addEventListener("mousedown", () => focusWindow(windowElement));
 
-  makeDraggable(titleElement, windowElement);
+  make_draggable(titleElement, windowElement);
   closeButton?.addEventListener("click", () => {
     PLAY_CLIP("audio/clips/click");
     closeWindow(windowElement);

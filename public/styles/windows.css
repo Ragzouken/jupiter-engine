@@ -1,0 +1,51 @@
+@scope ([data-window]) {
+  :scope {
+    --light: white;
+    --dark: black;
+
+    display: grid;
+    grid-template-areas:
+      "titlebar"
+      "content";
+    grid-template-rows: min-content 1fr;
+
+    position: absolute;
+    left: 0; top: 0;
+
+    width: 256px;
+    height: 256px;
+
+    border: solid var(--light) 1px;
+    background: var(--light);
+    box-shadow: 0 0 0 1px var(--dark);
+
+    background: var(--dark);
+    color: var(--light);
+    font-family: monospace;
+  }
+
+  .titlebar {
+    display: grid;
+    grid-area: titlebar;
+    grid-template-areas: "title close";
+    grid-template-columns: 1fr min-content;
+
+    background: var(--light);
+    color: var(--dark);
+
+    & :first-child {
+      place-self: center center;
+    }
+  }
+
+  .close {
+    grid-area: close;
+  }
+
+  .content {
+    grid-area: content;
+
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+}

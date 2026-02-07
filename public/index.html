@@ -10,6 +10,9 @@
 
   <script src="./scripts/sounds.js"></script>
   <script src="./scripts/events.js"></script>
+  <script src="./scripts/windows.js"></script>
+
+  <link rel="stylesheet" href="./styles/windows.css">
 
   <!-- <script src="./scripts/engine.js"></script> -->
 
@@ -35,6 +38,44 @@
     </script>
   </template>
 
+  <template data-load-macro="windows">
+    <article id="intro" title="darkmail" data-pinned>
+      <style>
+        :scope {
+          width: 512px;
+        }
+      </style>
+
+      <h1>inbox</h1>
+      <p>bla bla bla</p>
+      <p>bla bla bla</p>
+      <p>bla bla bla</p>
+      <p>bla bla bla</p>
+      <p>bla bla bla</p>
+      <p>bla bla bla</p>
+      <p>bla bla bla</p>
+      <p>bla bla bla</p>
+      <p>bla bla bla</p>
+
+      <article id="warnings" title="warnings">
+        <p>
+          bla bla lba
+        </p>
+      </article>
+
+      <article id="about" title="about">
+        <p>
+          bla bla bla
+        </p>
+
+        <h1>audio</h1>
+        <ul>
+          <li><a href="https://cyrex-studios.itch.io/universal-ui-soundpack" target="_blank">Nathan Gibson</a></li>
+        </ul>
+      </article>
+    </article>
+  </template>
+
   <p data-macro-links>
     hello [ass|poo] you are [mother|fucker] [goodbye]
   </p>
@@ -45,7 +86,7 @@
     PLAY_CLIP("audio/clips/wow")
     PLAY_MUSIC("audio/music/amb")
 
-    console.log(SOUNDS)
+    console.log(WINDOW_DATA);
 
     function LINK(text, path) {
       return html("a", { href: `#${path}` }, text);
