@@ -1,5 +1,7 @@
 const EVENTS = new Map();
 
+const DELAY = (seconds) => sleep(seconds * 1000);
+
 function RUN_EVENT(id) {
   const event = EVENTS.get(id);
 

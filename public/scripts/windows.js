@@ -9,14 +9,64 @@ const WINDOWS = new Map();
  * @param {string} path 
  */
 function OPEN_WINDOW(path) {
-  document.body.append(WINDOWS.get(path));
+  const window = WINDOWS.get(path);
+  document.body.append(window);
+  window.dispatchEvent(new CustomEvent("window-open", { bubbles: true, detail: { window } }));
 }
 
 /**
  * @param {string} path
  */
 function CLOSE_WINDOW(path) {
-  WINDOWS.get(path).remove();
+  const window = WINDOWS.get(path);
+  window.dispatchEvent(new CustomEvent("window-close", { bubbles: true, detail: { window } }));
+  window.remove();
+}
+
+/**
+ * 
+ * @param {string} path 
+ */
+function FOREGROUND_WINDOW(path) {
+  const window = WINDOWS.get(path);
+  window.parentElement.append(window);
+  window.dispatchEvent(new CustomEvent("window-foreground", { bubbles: true, detail: { window } }));
+}
+
+/**
+ * Replace the content of the window of the target path with the content of the
+ * window of the source path.
+ * @param {string} target 
+ * @param {string} source 
+ */
+function SPLICE_WINDOW(target, source) {
+  const content = WINDOWS.get(target).querySelector("[data-content]");
+  content.replaceChildren(WINDOW_DATA.get(source));
+}
+
+/**
+ * 
+ * @param  {...string} exceptions 
+ */
+function CLOSE_WALL_WINDOWS(...exceptions) {
+  for (const path of WINDOWS.keys())
+    if (!exceptions.includes(path))
+      CLOSE_WINDOW(path);
+}
+
+function make_window(article) {
+  const label = html("div", { "class": "window-title" }, "title")
+  const close = html("button", { "class": "window-close" }, "✕");
+  const title = html("div", { "class": "titlebar" }, label, close);
+  const content = html("div", { "data-content": "", "class": "content" }, article);
+  const window = html("div", { "data-window": "" }, title, content);
+
+  content.addEventListener("scroll", () => window.dispatchEvent(new CustomEvent("window-scroll", { bubbles: true })));
+
+  close.addEventListener("click", () => window.remove());
+  make_draggable(title, window, document.querySelector("[data-window-bounds]"));
+
+  return window;
 }
 
 /**
@@ -47,34 +97,35 @@ function make_draggable(handleElement, draggedElement, boundingElement = undefin
     const tx = event.clientX + dx;
     const ty = event.clientY + dy;
 
-    let minX = tx;
-    let minY = ty;
+    draggedElement.style.left = tx + 'px';
+    draggedElement.style.top = ty + 'px';
 
-    const maxX = minX + draggedElement.clientWidth;
-    const maxY = minY + draggedElement.clientHeight;
+    boundWindow(draggedElement, boundingElement);
 
-    const shiftX = Math.min(0, boundingElement.clientWidth - maxX);
-    const shiftY = Math.min(0, boundingElement.clientHeight - maxY);
-
-    minX = Math.max(0, minX + shiftX);
-    minY = Math.max(0, minY + shiftY);
-
-    draggedElement.style.left = minX + 'px';
-    draggedElement.style.top = minY + 'px';
+    draggedElement.dispatchEvent(new CustomEvent("window-drag", { bubbles: true }));
   });
 }
 
-function make_window(article) {
-  const label = html("div", { "class": "window-title" }, "title")
-  const close = html("button", { "class": "window-close" }, "✕");
-  const title = html("div", { "class": "titlebar" }, label, close);
-  const content = html("div", { "class": "content" }, article);
-  const window = html("div", { "data-window": "" }, title, content);
+/**
+ * 
+ * @param {HTMLElement} window 
+ * @param {HTMLElement} bound 
+ */
+function boundWindow(window, bound) {
+  const windowRect = window.getBoundingClientRect();
+  const boundRect = bound.getBoundingClientRect();
 
-  close.addEventListener("click", () => window.remove());
-  make_draggable(title, window);
+  let { left, top } = windowRect;
 
-  return window;
+  left -= Math.min(0, windowRect.left   - boundRect.left);
+  left -= Math.max(0, windowRect.right  - boundRect.right);
+  top  -= Math.min(0, windowRect.top    - boundRect.top);
+  top  -= Math.max(0, windowRect.bottom - boundRect.bottom);
+
+  console.log(boundRect.bottom, boundRect.right);
+
+  window.style.left = left + 'px';
+  window.style.top = top + 'px';
 }
 
 const LOAD_WINDOWS = (element) => {

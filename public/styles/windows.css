@@ -34,6 +34,7 @@
     color: var(--dark);
 
     & :first-child {
+      pointer-events: none;
       place-self: center center;
     }
   }
@@ -42,7 +43,7 @@
     grid-area: close;
   }
 
-  .content {
+  [data-content] {
     grid-area: content;
 
     overflow-x: hidden;

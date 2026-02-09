@@ -12,6 +12,17 @@
     return element;
 }
 
+/**
+ * @param {string} source 
+ * @returns {Element[]}
+ */
+function parseHtml(source) {
+  const parser = new DOMParser();
+  const document = parser.parseFromString(source, "text/html");
+  const elements = [...document.querySelector("body").children];
+  return elements;
+}
+
 /** 
  * @param {number} milliseconds 
  * @returns {Promise}

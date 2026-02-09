@@ -19,9 +19,19 @@
   <!-- <link rel="stylesheet" href="./styles/style.css"> -->
   <!-- <link rel="stylesheet" href="./styles/effects.css"> -->
   <!-- <link rel="stylesheet" href="./styles/article.css"> -->
+
+  <style>
+    html, body {
+      position: absolute;
+      overflow: hidden;
+      inset: 0;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
 </head>
 
-<body>
+<body data-window-bounds>
   <template data-load-macro="sounds">
     <audio id="audio/music/amb" loop src="assets/ambience.mp3"></audio>
     <audio id="audio/clips/wow" src="assets/wow.m4a"></audio>
@@ -30,6 +40,7 @@
     <audio id="audio/clips/drop" src="assets/drop.mp3"></audio>
     <audio id="audio/clips/valid" src="assets/valid.mp3"></audio>
     <audio id="audio/clips/none" src="assets/none.mp3"></audio>
+    <audio id="audio/clips/move" src="assets/move.mp3"></audio>
   </template>
 
   <template data-load-macro="events">
@@ -75,6 +86,11 @@
       </article>
     </article>
   </template>
+  <script>
+    window.addEventListener("window-drag", () => PLAY_CLIP("audio/clips/move"));
+    window.addEventListener("window-scroll", () => PLAY_CLIP("audio/clips/move"));
+    window.addEventListener("click", () => PLAY_CLIP("audio/clips/click"));
+  </script>
 
   <p data-macro-links>
     hello [ass|poo] you are [mother|fucker] [goodbye]
@@ -85,8 +101,6 @@
   <script>
     PLAY_CLIP("audio/clips/wow")
     PLAY_MUSIC("audio/music/amb")
-
-    console.log(WINDOW_DATA);
 
     function LINK(text, path) {
       return html("a", { href: `#${path}` }, text);
