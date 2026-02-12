@@ -72,27 +72,47 @@ const TEXT_MARK_MACRO = (replacer) =>
  * matched with regex with the element returned by calling replacer with the
  * regex match named groups.
  * @param {RegExp} regex 
- * @param {(match: Object.<string, string>) => string | Node} replacer 
+ * @param {(match: Object.<string, string>) => string | Node | Node[]} replacer 
  * @returns {Macro} 
  */
 const REGEX_TEXT_REPLACER_MACRO = (regex, replacer) => (root) => {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
-    const current = /** @type {Text} */ (walker.currentNode);
-    const [match,] = current.textContent.matchAll(regex);
+    const prev = /** @type {Text} */ (walker.currentNode);
+    const [match,] = prev.textContent.matchAll(regex);
 
     if (match === undefined)
       continue;
 
     // split into three parts, replace middle
     const [first, last] = match.indices[0];
-    const element = replacer(match.groups);
+    const next = replacer(match.groups);
+    const nodes = Array.isArray(next) ? next : [next];
 
-    walker.currentNode = current.splitText(last);
-    current.splitText(first).replaceWith(element);
+    walker.currentNode = prev.splitText(last);
+    prev.splitText(first).replaceWith(...nodes);
 
     // nextNode() will be right side of the split
     walker.previousNode();
+  }
+}
+
+/**
+ * Return a macro that queries a root node with a selector and replaces each
+ * element with the tree returned by running a replacer function on the original
+ * element.
+ * @param {string} query 
+ * @param {(element: Element) => string | Node | Node[]} replacer 
+ * @returns 
+ */
+const QUERY_REPLACER_MACRO = (query, replacer) => (root) => {
+  const temp = html("template", { "data-temporary-stub": "" });
+  
+  for (const prev of ALL(query, root)) {
+    prev.replaceWith(temp);
+    const next = replacer(prev);
+    const nodes = Array.isArray(next) ? next : [next];
+    temp.replaceWith(...nodes);
   }
 }
 
@@ -114,11 +134,13 @@ const LOAD_MACROS = new Map();
       for (const [nodeName, varName] of names)
         if (node.nodeName == nodeName)
           window[varName] = node;
-      
+
       if (!node.nodeName.startsWith("#")) {
         const element = /** @type {Element} */ (node);
         const loader = LOAD_MACROS.get(element.getAttribute("data-load-macro"));
         if (loader) loader(element.content ?? element);
+
+        console.log(element.attributes);
       }
     }
   };

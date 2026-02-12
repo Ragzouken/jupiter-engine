@@ -1,7 +1,3 @@
-async function SHOW_TITLE(text) {
-  await showTitle(text);
-}
-
 async function PING_WINDOW(id) {
   await attentionWindow(id);
 }
@@ -121,20 +117,4 @@ function openDebugWindow() {
   body.replaceChildren(left, right);
 
   openWindow("debug");
-}
-
-async function showTitle(title) {
-  const screen = document.getElementById("title-board");
-  screen.hidden = false;
-  screen.style.setProperty("opacity", "100%");
-  screen.style.setProperty("pointer-events", "initial");
-
-  document.getElementById("title").textContent = title;
-
-  await sleep(2000);
-
-  screen.style.setProperty("opacity", "0%");
-  screen.style.removeProperty("pointer-events");
-
-  await sleep(1000);
 }

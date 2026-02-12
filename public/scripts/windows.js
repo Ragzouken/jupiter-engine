@@ -19,8 +19,8 @@ function OPEN_WINDOW(path) {
  */
 function CLOSE_WINDOW(path) {
   const window = WINDOWS.get(path);
-  window.dispatchEvent(new CustomEvent("window-close", { bubbles: true, detail: { window } }));
-  window.remove();
+  if (window.dispatchEvent(new CustomEvent("window-close", { bubbles: true, detail: { window }, cancelable: true })))
+    window.remove();
 }
 
 /**
@@ -54,16 +54,20 @@ function CLOSE_WALL_WINDOWS(...exceptions) {
       CLOSE_WINDOW(path);
 }
 
-function make_window(article) {
-  const label = html("div", { "class": "window-title" }, "title")
-  const close = html("button", { "class": "window-close" }, "✕");
+function make_window(path) {
+  const data = WINDOW_DATA.get(path);
+
+  const label = html("div", { "data-title": "" }, "title")
+  const close = html("button", { "data-close": "" }, "✕");
   const title = html("div", { "class": "titlebar" }, label, close);
-  const content = html("div", { "data-content": "", "class": "content" }, article);
+  const content = html("div", { "data-content": "", "class": "content" }, data);
   const window = html("div", { "data-window": "" }, title, content);
+
+  window.classList.add(...data.classList);
 
   content.addEventListener("scroll", () => window.dispatchEvent(new CustomEvent("window-scroll", { bubbles: true })));
 
-  close.addEventListener("click", () => window.remove());
+  close.addEventListener("click", () => CLOSE_WINDOW(path));
   make_draggable(title, window, document.querySelector("[data-window-bounds]"));
 
   return window;
@@ -78,6 +82,7 @@ function make_draggable(handleElement, draggedElement, boundingElement = undefin
   boundingElement = boundingElement ?? document.querySelector("html");
   let offset;
 
+  handleElement.setAttribute("data-drag-handle", "");
   handleElement.addEventListener('pointerdown', async (event) => {
     if (event.target !== handleElement) return;
     event.preventDefault();
@@ -87,6 +92,8 @@ function make_draggable(handleElement, draggedElement, boundingElement = undefin
   });
 
   window.addEventListener('pointerup', (event) => {
+    if (offset)
+      event.preventDefault();
     offset = undefined;
   });
 
@@ -122,8 +129,6 @@ function boundWindow(window, bound) {
   top  -= Math.min(0, windowRect.top    - boundRect.top);
   top  -= Math.max(0, windowRect.bottom - boundRect.bottom);
 
-  console.log(boundRect.bottom, boundRect.right);
-
   window.style.left = left + 'px';
   window.style.top = top + 'px';
 }
@@ -137,13 +142,16 @@ const LOAD_WINDOWS = (element) => {
   for (const data of parents.keys())
     WINDOW_DATA.set(getPath(data), data);
 
-  for (const [path, data] of WINDOW_DATA)
-    WINDOWS.set(path, make_window(data));
+  for (const path of WINDOW_DATA.keys())
+    WINDOWS.set(path, make_window(path));
 
   for (const data of WINDOW_DATA.values()) {
     // data.remove();
     data.removeAttribute("id");
   }
+
+  for (const window of WINDOWS.values())
+    document.dispatchEvent(new CustomEvent("window-load", { bubbles: true, detail: { window } }));
 
   function getPath(element) {
     const parent = parents.get(element);

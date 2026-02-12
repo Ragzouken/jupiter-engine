@@ -1,40 +1,11 @@
-@scope (article) {
+@scope ([data-window] article) {
   :scope {
-    width: 320px;
-    max-height: 320px;
-  }
-
-  :scope.normal {
     font-family: monospace;
-  }
 
-  .window-body {
-    overflow-y: scroll;
-    overflow-x: hidden;
-
-    display: flex;
-    flex-direction: column;
-    overscroll-behavior-y: none;
-
-    gap: 1rem;
-    padding: 1rem;
-
-    & h1 {
-      margin: 0;
-    }
-
-    & p {
-      margin: 0;
-    }
-
-    & img {
-      width: 100%;
-    }
-  }
-
-  .window-body::-webkit-scrollbar{
-        scrollbar-width: 10px;
-          width: 10px;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
   }
 
   h1 {
@@ -60,17 +31,11 @@
   a {
     background: var(--dark);
     color: var(--light);
-    text-decoration:underline;
+    text-decoration: underline;
 
     &:hover {
       background: var(--light);
       color: var(--dark);
     }
-
-    animation-name: link;
-    animation-direction: alternate;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
   }
 }
