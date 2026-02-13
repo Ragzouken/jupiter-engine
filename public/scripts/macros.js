@@ -1,42 +1,23 @@
 /**
  * @callback Macro
- * @param {Element} root
+ * @param {ParentNode} root
  */
 
 /**
- * Query for template elements then query within and create a map of element id
- * to callback on the element. 
- * @template T
- * @param {string} tquery Selector to find template elements.
- * @param {string} query Selector for elements within found templates.
- * @param {(element: Element) => T} callback Callback to map elements. 
- * @returns {Map<string, T>} 
+ * @callback Replacer
+ * @param {ParentNode} root
+ * @returns {string | Node | Node[]}
  */
-function TEMPLATE_QUERY_MAP(tquery, query, callback) {
-  return new Map(
-    ALL_TEMPLATE(tquery, query).map((element) => [element.id, callback(element)]),
-  );
-}
 
 /**
  * Iterate all results of querying a given root or otherwise the document.
  * @param {string} query 
  * @param {ParentNode} root 
+ * @return {Iterable<Element>}
  */
 function* ALL(query, root = document) {
   for (const element of root.querySelectorAll(query))
     yield element;
-}
-
-/**
- * Iterate queried elements inside queried template elements.
- * @param {string} tquery 
- * @param {string} query 
- */
-function* ALL_TEMPLATE(tquery, query) {
-  for (const template of document.querySelectorAll(tquery))
-    for (const element of template.content.querySelectorAll(query))
-      yield element;
 }
 
 /**
@@ -102,8 +83,8 @@ const REGEX_TEXT_REPLACER_MACRO = (regex, replacer) => (root) => {
  * element with the tree returned by running a replacer function on the original
  * element.
  * @param {string} query 
- * @param {(element: Element) => string | Node | Node[]} replacer 
- * @returns 
+ * @param {Replacer} replacer 
+ * @returns
  */
 const QUERY_REPLACER_MACRO = (query, replacer) => (root) => {
   const temp = html("template", { "data-temporary-stub": "" });
@@ -116,7 +97,7 @@ const QUERY_REPLACER_MACRO = (query, replacer) => (root) => {
   }
 }
 
-/** @type {Map<string, (root: Node) => void>} */
+/** @type {Map<string, Macro>} */
 const LOAD_MACROS = new Map();
 
 {
