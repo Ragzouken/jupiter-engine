@@ -40,6 +40,9 @@
     color: var(--dark);
     font-weight: bold;
 
+    padding: 4px;
+    gap: 4px;
+
     & button {
       border: solid var(--dark) 1px;
       background: var(--light);
@@ -56,10 +59,13 @@
 
   [data-title] {
     pointer-events: none;
-    text-overflow: ellipsis;
-    place-self: center flex-start;
+    align-self: center;
 
-    margin: 0 .5em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    padding-left: 4px;
   }
 
   [data-close] {
@@ -67,7 +73,6 @@
     place-self: middle;
     width: 24px;
     height: 24px;
-    margin: 4px;
   }
 
   [data-content] {

@@ -13,11 +13,10 @@
  * Iterate all results of querying a given root or otherwise the document.
  * @param {string} query 
  * @param {ParentNode} root 
- * @return {Iterable<Element>}
+ * @return {Element[]}
  */
-function* ALL(query, root = document) {
-  for (const element of root.querySelectorAll(query))
-    yield element;
+function ALL(query, root = document) {
+  return [...root.querySelectorAll(query)];
 }
 
 /**

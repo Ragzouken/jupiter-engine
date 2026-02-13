@@ -4,14 +4,24 @@ const WINDOW_DATA = new Map();
 /** @type {Map<string, HTMLElement>} */
 const WINDOWS = new Map();
 
+/** @type {Set<HTMLElement>} */
+const OPEN_WINDOWS = new Set();
+
 /**
  * 
  * @param {string} path 
  */
 function OPEN_WINDOW(path) {
   const window = WINDOWS.get(path);
-  document.body.append(window);
+
+  if (!OPEN_WINDOWS.has(window)) {
+    document.body.append(window);
+    placeWindow(window, document.querySelector("[data-window-bounds]"));
+  }
+
   window.dispatchEvent(new CustomEvent("window-open", { bubbles: true, detail: { window } }));
+
+  FOREGROUND_WINDOW(path);
 }
 
 /**
@@ -19,8 +29,10 @@ function OPEN_WINDOW(path) {
  */
 function CLOSE_WINDOW(path) {
   const window = WINDOWS.get(path);
-  if (window.dispatchEvent(new CustomEvent("window-close", { bubbles: true, detail: { window }, cancelable: true })))
+  if (window.dispatchEvent(new CustomEvent("window-close", { bubbles: true, detail: { window }, cancelable: true }))) {
     window.remove();
+    OPEN_WINDOWS.delete(window);
+  }
 }
 
 /**
@@ -29,7 +41,11 @@ function CLOSE_WINDOW(path) {
  */
 function FOREGROUND_WINDOW(path) {
   const window = WINDOWS.get(path);
-  window.parentElement.append(window);
+  
+  OPEN_WINDOWS.delete(window);
+  OPEN_WINDOWS.add(window);
+  reorderWindows();
+
   window.dispatchEvent(new CustomEvent("window-foreground", { bubbles: true, detail: { window } }));
 }
 
@@ -54,18 +70,32 @@ function CLOSE_WALL_WINDOWS(...exceptions) {
       CLOSE_WINDOW(path);
 }
 
-function make_window(path) {
-  const data = WINDOW_DATA.get(path);
+function reorderWindows() {
+  let z = 0;
+  for (const window of OPEN_WINDOWS) {
+    window.style.zIndex = z.toString();
+    z += 1;
+  }
+}
 
-  const label = html("div", { "data-title": "" }, "title")
+function makeWindow(path) {
+  const data = WINDOW_DATA.get(path);
+  const pinned = data.hasAttribute("data-pinned");
+
+  const label = html("div", { "data-title": "" }, data.getAttribute("title"));
   const close = html("button", { "data-close": "" }, "✕");
-  const title = html("div", { "class": "titlebar" }, label, close);
+  const title = html("div", { "class": "titlebar" }, label, pinned ? "" : close);
   const content = html("div", { "data-content": "", "class": "content" }, data);
   const window = html("div", { "data-window": "" }, title, content);
 
   window.classList.add(...data.classList);
 
-  content.addEventListener("scroll", () => window.dispatchEvent(new CustomEvent("window-scroll", { bubbles: true })));
+  content.addEventListener("scroll", () => {
+    FOREGROUND_WINDOW(path);
+    window.dispatchEvent(new CustomEvent("window-scroll", { bubbles: true }));
+  });
+
+  window.addEventListener("pointerdown", () => FOREGROUND_WINDOW(path));
 
   close.addEventListener("click", () => CLOSE_WINDOW(path));
   make_draggable(title, window, document.querySelector("[data-window-bounds]"));
@@ -118,6 +148,24 @@ function make_draggable(handleElement, draggedElement, boundingElement = undefin
  * @param {HTMLElement} window 
  * @param {HTMLElement} bound 
  */
+function placeWindow(window, bound) {
+  const windowRect = window.getBoundingClientRect();
+  const boundRect = bound.getBoundingClientRect();
+
+  const left = boundRect.left;
+  const right = boundRect.right - windowRect.width;
+  const top = boundRect.top;
+  const bottom = boundRect.bottom - windowRect.height;
+
+  window.style.left = randInt(left, right) + 'px';
+  window.style.top = randInt(top, bottom) + 'px';
+}
+
+/**
+ * 
+ * @param {HTMLElement} window 
+ * @param {HTMLElement} bound 
+ */
 function boundWindow(window, bound) {
   const windowRect = window.getBoundingClientRect();
   const boundRect = bound.getBoundingClientRect();
@@ -143,7 +191,7 @@ const LOAD_WINDOWS = (element) => {
     WINDOW_DATA.set(getPath(data), data);
 
   for (const path of WINDOW_DATA.keys())
-    WINDOWS.set(path, make_window(path));
+    WINDOWS.set(path, makeWindow(path));
 
   for (const data of WINDOW_DATA.values()) {
     // data.remove();

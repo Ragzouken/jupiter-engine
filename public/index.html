@@ -12,7 +12,7 @@
   <script src="./scripts/events.js"></script>
   <script src="./scripts/windows.js"></script>
 
-  <!-- <link rel="stylesheet" href="./styles/effects.css"> -->
+  <link rel="stylesheet" href="./styles/effects.css">
   <link rel="stylesheet" href="./styles/windows.css">
   <link rel="stylesheet" href="./styles/article.css">
 
@@ -77,18 +77,29 @@
   <template data-load-macro="sounds">
     <audio id="audio/music/amb" loop src="assets/ambience.mp3"></audio>
     <audio id="audio/clips/wow" src="assets/wow.m4a"></audio>
-    <audio id="audio/clips/click" src="assets/click.mp3"></audio>
     <audio id="audio/clips/grab" src="assets/drop.mp3"></audio>
     <audio id="audio/clips/drop" src="assets/drop.mp3"></audio>
     <audio id="audio/clips/valid" src="assets/valid.mp3"></audio>
     <audio id="audio/clips/none" src="assets/none.mp3"></audio>
+
+    <audio id="audio/clips/click" src="assets/click.mp3"></audio>
     <audio id="audio/clips/move" src="assets/move.mp3"></audio>
+    <audio id="audio/clips/notification" src="assets/notification.mp3"></audio>
+
+    <audio id="audio/music/mundane" src="assets/info-loop.mp3" loop volume=".1"></audio>
+    <audio id="audio/music/mystery" src="assets/sssm-tapes.mp3" loop volume=".1"></audio>
+    <audio id="audio/music/evolution" src="assets/sssm-flesh.mp3" loop volume=".1"></audio>
+    <audio id="audio/music/credits" src="assets/credits-loop.mp3" loop volume=".1"></audio>
   </template>
 
   <script>
+    window.addEventListener("window-open", (event) => PULSE_CLASS(event.detail.window, "flash"));
     window.addEventListener("window-drag", () => PLAY_CLIP("audio/clips/move"));
     window.addEventListener("window-scroll", () => PLAY_CLIP("audio/clips/move"));
-    window.addEventListener("click", () => PLAY_CLIP("audio/clips/click"));
+    window.addEventListener("click", (event) => {
+      if (event.target.nodeName === "A" || event.target.nodeName === "BUTTON")
+        PLAY_CLIP("audio/clips/click");
+    });
   </script>
 
   <style>
@@ -108,7 +119,7 @@
   </script>
 
   <script>
-    function SHOW_TITLE() {}
+    function SHOW_TITLE() { }
 
     function LINK(text, path) {
       const link = html("a", { href: `#${path}` }, text);
@@ -122,7 +133,7 @@
       });
       return link;
     }
-    
+
     const LINKS_MACRO = TEXT_MARK_MACRO(LINK);
 
     document.addEventListener("window-load", (event) => {
@@ -213,10 +224,6 @@
       OPEN_WINDOW("credits-thanks");
     </script>
   </template>
-  <script>
-    // TODO: whyyyy
-    // LOAD_MACROS.get("events")(PREV_TEMPLATE.content);
-  </script>
 
   <template data-load-macro="windows">
     <article class="inbox" id="inbox" title="darkmail - inbox" data-pinned>

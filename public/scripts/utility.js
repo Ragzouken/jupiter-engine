@@ -1,4 +1,16 @@
 /**
+ * 
+ * @param {Element} element 
+ * @param {string} name 
+ * @param {number} duration
+ */
+async function PULSE_CLASS(element, name, duration=.1) {
+    element.classList.toggle(name, true);
+    await sleep(duration * 1000);
+    element.classList.toggle(name, false);
+}
+
+/**
  * @template {keyof HTMLElementTagNameMap} K
  * @param {K} tagName 
  * @param {*} attributes 
@@ -33,6 +45,12 @@ function sleep(milliseconds) {
 
 function randFloat(min, max) {
     return min + (max - min) * Math.random();
+}
+
+function randInt(min, max) {
+  const minCeiled = Math.ceil(min);
+  const maxFloored = Math.floor(max);
+  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
 }
 
 // async equivalent of Function constructor
