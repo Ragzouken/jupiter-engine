@@ -5,8 +5,6 @@ const DELAY = (seconds) => sleep(seconds * 1000);
 function RUN_EVENT(id) {
   const event = EVENTS.get(id);
 
-  console.log(event)
-
   if (event === undefined) {
     console.trace(`NO EVENT "${id}"`);
   } else {

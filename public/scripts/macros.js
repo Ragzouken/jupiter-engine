@@ -116,36 +116,58 @@ const QUERY_REPLACER_MACRO = (query, replacer) => (root) => {
   }
 }
 
+/** @type {Map<string, (root: Node) => void>} */
 const LOAD_MACROS = new Map();
 
 {
-  const names = new Map();
-  names.set("SCRIPT", "THIS_SCRIPT");
-  names.set("TEMPLATE", "PREV_TEMPLATE");
+  const NAMES = new Map();
+  NAMES.set("SCRIPT", "THIS_SCRIPT");
+  NAMES.set("TEMPLATE", "PREV_TEMPLATE");
+
+  /** @type {Set<Element>} */
+  const SEEN = new Set();
+
+  const runElementLoader = (element) => {
+    SEEN.delete(element);
+    const loader = LOAD_MACROS.get(element.getAttribute("data-load-macro"));
+    if (loader) loader(element.content ?? element);
+  };
+
+  const checkSeen = (next) => {
+    for (const element of SEEN)
+      if (!element.contains(next))
+        runElementLoader(element);
+  };
+
+  const finalise = () => {
+    observer.disconnect();
+    for (const element of SEEN)
+      runElementLoader(element);
+  };
 
   /**
    * @param {MutationRecord[]} mutations 
    * @param {MutationObserver} observer 
    */
-  function callback(mutations, observer) {
+  const callback = (mutations, observer) => {
     for (const mutation of mutations) {
       const [node] = /** @type {NodeList} */ (mutation.addedNodes);
 
-      for (const [nodeName, varName] of names)
+      checkSeen(node);
+
+      for (const [nodeName, varName] of NAMES)
         if (node.nodeName == nodeName)
           window[varName] = node;
 
       if (!node.nodeName.startsWith("#")) {
         const element = /** @type {Element} */ (node);
-        const loader = LOAD_MACROS.get(element.getAttribute("data-load-macro"));
-        if (loader) loader(element.content ?? element);
-
-        console.log(element.attributes);
+        const loader = LOAD_MACROS.has(element.getAttribute("data-load-macro"));
+        if (loader) SEEN.add(element);
       }
     }
   };
 
   const observer = new MutationObserver(callback);
   observer.observe(document, { childList: true, subtree: true });
-  document.addEventListener("DOMContentLoaded", () => observer.disconnect());
+  document.addEventListener("DOMContentLoaded", () => finalise());
 }
