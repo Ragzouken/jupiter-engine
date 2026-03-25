@@ -115,11 +115,12 @@ function make_draggable(handleElement, draggedElement, boundingElement = undefin
   handleElement.setAttribute("data-drag-handle", "");
   handleElement.addEventListener('pointerdown', async (event) => {
     if (event.target !== handleElement) return;
-    event.preventDefault();
 
     const { x, y } = draggedElement.getBoundingClientRect();
     offset = [x - event.clientX, y - event.clientY];
   });
+
+  handleElement.addEventListener('dragstart', (event) => event.preventDefault());
 
   window.addEventListener('pointerup', (event) => {
     if (offset)
